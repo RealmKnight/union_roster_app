@@ -1,16 +1,24 @@
-you are building a web app that allows union members to view the rosters of their union by prior rights.
+# Project Overview
 
-YOU WILL BE USING NEXTjs 15, SHADCN, TAILWIND, lUCID ICONS, AND SUPABASE.
+You are building a web application that allows users to see the Rosters of their local union broken down by prior rights seniority. The Rosters are stored in a supabase database and the application will query the database to get the data. The rosters will also be able to be downloaded in pdf format oince they are calculated.
 
-Core Features:
+# Requirements
 
-- the app should have a SIGNIN page that allows ADMIN users to sign in with their email and password.
-
+- The application must be built using Next.js 15, shadcn, lucide icons, supabase, react-pdf/renderer, and Tailwind CSS.
+- The application must be responsive and look good on both mobile and desktop.
+- The application must be able to query the database to get the data.
+- The application must be able to download the rosters in pdf format.
+- The application will also have a login system that will allow admin users to login and manage the rosters. these users will be pre-populated in the database and will have the ability to add and remove other admin users.
+- admin users are the only ones able to trigger the rosters to be calculated/re-calculated.
+- The application will have theming to allow switching from light to dark mode and potentially differnet color schemes in the future.
+- The application will also have the current CBA version available to download as a pdf.
+- The application must be able to be deployed to Vercel/Coolify.
 - the home page should have a navigation bar with the following links:
 
   - Home
   - Rosters
   - Admin (admin only)
+  - Links/Tools (links to the bylaws, constitution, and current contract)
   - Sign In
 
 - the app should have a page that allows users to view the rosters of their union by prior rights. Prior rights are the following:
@@ -241,8 +249,84 @@ export function combineEJEArrays(
 }
 ```
 
-- the app should have a page that allows users to view the bylaws of their union.
+# Database
 
-- the app should have a page that allows users to view the constitution.
+The database is a supabase database that is self hosted. The table that contains the members of the union is called "members".
 
-- the app should have a page that allows users to view the current contract.
+# Rosters
+
+The rosters will be separated by prior rights seniority. The rosters will be displayed in a table format with the following columns:
+
+- Name (First and Last)
+- PIN Number
+- Prior Rights Seniority Designation (WC, DMIR, DWP, SYS1, EJ&E, SYS2)
+- Engineer Date
+- DOB
+- Current Seniority Zone (Zones 1-10)
+- Desired Home Zone (if any)
+- Status (Active, Inactive, Pending, Retired, Set-Back)
+- Current Rank in the seniority system
+
+each row will be a card with the members information and the card will be clickable by anyone to bring up that members full information. Logged in admins will have the ability to edit the members information.
+
+# PDF Rosters
+
+The PDF rosters will be generated using react-pdf/renderer. The PDF will be a table format with the following columns:
+
+- Name (First and Last)
+- PIN Number
+- Prior Rights Seniority Designation (WC, DMIR, DWP, SYS1, EJ&E, SYS2)
+- Engineer Date
+- DOB
+- Current Seniority Zone (Zones 1-10)
+- Desired Home Zone (if any)
+- Status (Active, Inactive, Pending, Retired, Set-Back)
+
+example code snippet for pdf generation:
+
+```ts
+import React from "react";
+import { PDFDownloadLink, Document, Page, View, Text, StyleSheet } from "@react-pdf/renderer";
+import { Button } from "@/components/ui/button";
+
+const styles = StyleSheet.create({
+  page: { padding: 30 },
+  title: { fontSize: 24, marginBottom: 20 },
+  table: { display: "table", width: "100%", borderStyle: "solid", borderWidth: 1 },
+  tableRow: { flexDirection: "row" },
+  tableHeader: { backgroundColor: "#f0f0f0", fontWeight: "bold" },
+  tableCell: { width: "25%", borderStyle: "solid", borderWidth: 1, padding: 5 },
+});
+
+const RosterPDF = ({ data }) => (
+  <Document>
+    <Page size="A4" style={styles.page}>
+      <Text style={styles.title}>Team Roster</Text>
+      <View style={styles.table}>
+        <View style={[styles.tableRow, styles.tableHeader]}>
+          <Text style={styles.tableCell}>Name</Text>
+          <Text style={styles.tableCell}>Position</Text>
+          <Text style={styles.tableCell}>Contact</Text>
+          <Text style={styles.tableCell}>Status</Text>
+        </View>
+        {data.map((row, i) => (
+          <View key={i} style={styles.tableRow}>
+            <Text style={styles.tableCell}>{row.name}</Text>
+            <Text style={styles.tableCell}>{row.position}</Text>
+            <Text style={styles.tableCell}>{row.contact}</Text>
+            <Text style={styles.tableCell}>{row.status}</Text>
+          </View>
+        ))}
+      </View>
+    </Page>
+  </Document>
+);
+
+const RosterDownloadButton = ({ data }) => (
+  <PDFDownloadLink document={<RosterPDF data={data} />} fileName="team-roster.pdf">
+    {({ loading }) => <Button disabled={loading}>{loading ? "Generating PDF..." : "Download PDF"}</Button>}
+  </PDFDownloadLink>
+);
+
+export default RosterDownloadButton;
+```
