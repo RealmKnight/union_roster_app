@@ -4,7 +4,7 @@ You are building a web application that allows users to see the Rosters of their
 
 # Requirements
 
-- The application must be built using Next.js 15, shadcn, lucide icons, supabase, and Tailwind CSS.
+- The application must be built using Next.js 15, shadcn, lucide icons, supabase, react-pdf/renderer, and Tailwind CSS.
 - The application must be responsive and look good on both mobile and desktop.
 - The application must be able to query the database to get the data.
 - The application must be able to download the rosters in pdf format.
@@ -268,3 +268,65 @@ The rosters will be separated by prior rights seniority. The rosters will be dis
 - Current Rank in the seniority system
 
 each row will be a card with the members information and the card will be clickable by anyone to bring up that members full information. Logged in admins will have the ability to edit the members information.
+
+# PDF Rosters
+
+The PDF rosters will be generated using react-pdf/renderer. The PDF will be a table format with the following columns:
+
+- Name (First and Last)
+- PIN Number
+- Prior Rights Seniority Designation (WC, DMIR, DWP, SYS1, EJ&E, SYS2)
+- Engineer Date
+- DOB
+- Current Seniority Zone (Zones 1-10)
+- Desired Home Zone (if any)
+- Status (Active, Inactive, Pending, Retired, Set-Back)
+
+example code snippet for pdf generation:
+
+```ts
+import React from "react";
+import { PDFDownloadLink, Document, Page, View, Text, StyleSheet } from "@react-pdf/renderer";
+import { Button } from "@/components/ui/button";
+
+const styles = StyleSheet.create({
+  page: { padding: 30 },
+  title: { fontSize: 24, marginBottom: 20 },
+  table: { display: "table", width: "100%", borderStyle: "solid", borderWidth: 1 },
+  tableRow: { flexDirection: "row" },
+  tableHeader: { backgroundColor: "#f0f0f0", fontWeight: "bold" },
+  tableCell: { width: "25%", borderStyle: "solid", borderWidth: 1, padding: 5 },
+});
+
+const RosterPDF = ({ data }) => (
+  <Document>
+    <Page size="A4" style={styles.page}>
+      <Text style={styles.title}>Team Roster</Text>
+      <View style={styles.table}>
+        <View style={[styles.tableRow, styles.tableHeader]}>
+          <Text style={styles.tableCell}>Name</Text>
+          <Text style={styles.tableCell}>Position</Text>
+          <Text style={styles.tableCell}>Contact</Text>
+          <Text style={styles.tableCell}>Status</Text>
+        </View>
+        {data.map((row, i) => (
+          <View key={i} style={styles.tableRow}>
+            <Text style={styles.tableCell}>{row.name}</Text>
+            <Text style={styles.tableCell}>{row.position}</Text>
+            <Text style={styles.tableCell}>{row.contact}</Text>
+            <Text style={styles.tableCell}>{row.status}</Text>
+          </View>
+        ))}
+      </View>
+    </Page>
+  </Document>
+);
+
+const RosterDownloadButton = ({ data }) => (
+  <PDFDownloadLink document={<RosterPDF data={data} />} fileName="team-roster.pdf">
+    {({ loading }) => <Button disabled={loading}>{loading ? "Generating PDF..." : "Download PDF"}</Button>}
+  </PDFDownloadLink>
+);
+
+export default RosterDownloadButton;
+```
