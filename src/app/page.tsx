@@ -20,9 +20,6 @@ export default function Home() {
               <Button asChild size="lg">
                 <Link href="/rosters">View Rosters</Link>
               </Button>
-              <Button variant="outline" asChild size="lg">
-                <Link href="/login">Member Login</Link>
-              </Button>
             </div>
           </div>
         </div>

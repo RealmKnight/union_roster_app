@@ -105,7 +105,7 @@ export async function NavBar() {
             </Button>
           ) : (
             <Button variant="ghost" asChild>
-              <Link href="/login">Sign In</Link>
+              <Link href="/login">Admin Sign In</Link>
             </Button>
           )}
         </div>
