@@ -1,39 +1,155 @@
-# Project Overview
+# Product Requirements Document (PRD)
 
-You are building a web application that allows users to see the Rosters of their local union broken down by prior rights seniority. The Rosters are stored in a supabase database and the application will query the database to get the data. The rosters will also be able to be downloaded in pdf format oince they are calculated.
+## Project Overview
 
-# Requirements
+The goal of this project is to build a responsive web application that enables users to view and download union rosters broken down by prior rights seniority. The application will utilize a Supabase database to manage data and provide functionality for admin users to manage rosters and perform calculations. It will support downloading rosters in PDF format and will include theming options (light/dark mode) with potential future color schemes.
 
-- The application must be built using Next.js 15, shadcn, lucide icons, supabase, react-pdf/renderer, and Tailwind CSS.
-- The application must be responsive and look good on both mobile and desktop.
-- The application must be able to query the database to get the data.
-- The application must be able to download the rosters in pdf format.
-- The application will also have a login system that will allow admin users to login and manage the rosters. these users will be pre-populated in the database and will have the ability to add and remove other admin users.
-- admin users are the only ones able to trigger the rosters to be calculated/re-calculated.
-- The application will have theming to allow switching from light to dark mode and potentially differnet color schemes in the future.
-- The application will also have the current CBA version available to download as a pdf.
-- The application must be able to be deployed to Vercel/Coolify.
-- the home page should have a navigation bar with the following links:
+## Functional Requirements
 
+### 1. Authentication and Authorization
+
+#### Login System
+
+- Admin users will authenticate via email/password
+- Admin accounts will be pre-populated in the database
+- Only admin users can:
+  - Add/remove other admin users
+  - Trigger roster calculations
+  - Edit member information
+
+#### Protected Routes
+
+- The `/admin` route and roster calculation endpoints must be restricted to admin users
+
+### 2. Rosters Management
+
+#### Database Integration
+
+- Fetch rosters from the Supabase `members` table
+- The table will have the following fields:
+  - `Name` (First and Last)
+  - `PIN Number`
+  - `Prior Rights Seniority Designation` (WC, DMIR, DWP, SYS1, EJ&E, SYS2)
+  - `Engineer Date`
+  - `DOB`
+  - `Current Zone` (Zones 1-10)
+  - `Desired Home Zone` (if any)
+  - `Status` (Active, Inactive, Pending, Retired, Set-Back)
+  - `Current Rank` (Seniority system ranking)
+
+#### Roster Calculation
+
+- Implement roster allocation based on provided patterns for each prior rights group:
+  - **WC**: Combines members in a specific pattern (example code provided)
+  - **DWP**: Combines members with different allocation rules (example code provided)
+  - **DMIR**: Combines members with its own allocation pattern (example code provided)
+  - **EJ&E**: Combines members with unique logic (example code provided)
+
+#### Roster Display
+
+- Display rosters in a responsive table format with sortable columns
+- Admin users can edit member information via a modal or inline editing
+
+### 3. PDF Export
+
+- Use `@react-pdf/renderer` to generate PDF downloads of rosters
+- The PDF table should mirror the web UI table structure:
+  - `Name`
+  - `PIN Number`
+  - `Prior Rights Seniority Designation`
+  - `Engineer Date`
+  - `DOB`
+  - `Current Zone`
+  - `Desired Home Zone`
+  - `Status`
+
+### 4. Theming and Accessibility
+
+#### Light/Dark Mode
+
+- Implement a toggle to switch themes
+- Future-proof with a structure for additional color schemes
+
+#### Responsive Design
+
+- Ensure the app is optimized for both desktop and mobile devices
+
+### 5. Home Page and Navigation
+
+#### Navigation Bar
+
+- Links:
   - Home
   - Rosters
-  - Admin (admin only)
-  - Links/Tools (links to the bylaws, constitution, and current contract)
+  - Admin (visible only to admin users)
+  - Links/Tools (links to bylaws, constitution, and current contract)
   - Sign In
 
-- the app should have a page that allows users to view the rosters of their union by prior rights. Prior rights are the following:
+### 6. Deployment
 
-  - WC
-  - DWP
-  - DMIR
-  - EJ&E
-  - Full Roster (including In-Active members)
+- Deploy the application on Vercel or Coolify
+- Ensure it integrates seamlessly with the self-hosted Supabase backend
 
-- the app will appropriately calculate the rosters based on the rules for each prior rights group.
-  examples;
-  - WC: example code snippet with correct allocation of members to the WC prior rights group:
+## Non-Functional Requirements
 
-```ts
+### 1. Performance
+
+- Queries for rosters must execute within 2 seconds
+- PDF generation should not exceed 5 seconds
+
+### 2. Scalability
+
+- Ensure the database and app can handle up to 10,000 members
+
+### 3. Security
+
+- Use HTTPS for all communication
+- Implement secure password storage for admin credentials
+
+## File Structure
+
+```
+union-roster-app
+├── .gitignore
+├── env.local
+├── next.config.ts
+├── package.json
+├── postcss.config.mjs
+├── tailwind.config.ts
+├── tsconfig.json
+├── public
+│   ├── assets
+├── src
+│   ├── app
+│   │   ├── favicon.ico
+│   │   ├── globals.css
+│   │   ├── layout.tsx
+│   │   ├── page.tsx
+│   │   ├── admin
+│   │   ├── rosters
+│   │   └── links
+│   ├── components
+│   │   ├── ui
+│   │   │   ├── button.tsx
+│   │   │   ├── table.tsx
+│   │   │   └── modal.tsx
+│   ├── hooks
+│   │   └── use-toast.ts
+│   ├── lib
+│   │   └── utils.ts
+│   ├── utils
+│   │   └── supabase
+│   │       ├── client.ts
+│   │       └── server.ts
+```
+
+## Provided Code Snippets
+
+### Roster Calculation Examples
+
+#### WC
+
+```typescript
 export function combineWCArrays(
   wcmembers: any[],
   dmirmembers: any[],
@@ -43,16 +159,9 @@ export function combineWCArrays(
   sys2members: any[]
 ) {
   const combinedArray = [];
-
-  // Add all wcmembers
   combinedArray.push(...wcmembers);
-
-  // Create a new array for the pattern
   const patternArray = [];
-
-  // Apply the new pattern
   while (dmirmembers.length > 0 || dwpmembers.length > 0) {
-    // 2 DMIR and 1 DWP, repeated 6 times
     for (let i = 0; i < 6 && (dmirmembers.length > 0 || dwpmembers.length > 0); i++) {
       for (let j = 0; j < 2 && dmirmembers.length > 0; j++) {
         patternArray.push(dmirmembers.shift());
@@ -61,8 +170,6 @@ export function combineWCArrays(
         patternArray.push(dwpmembers.shift());
       }
     }
-
-    // 1 DMIR and 1 DWP, repeated 4 times
     for (let i = 0; i < 4 && (dmirmembers.length > 0 || dwpmembers.length > 0); i++) {
       if (dmirmembers.length > 0) {
         patternArray.push(dmirmembers.shift());
@@ -72,22 +179,17 @@ export function combineWCArrays(
       }
     }
   }
-
-  // Add the pattern array to the combined array
   combinedArray.push(...patternArray);
-
-  // Add remaining arrays
   combinedArray.push(...sys1members);
   combinedArray.push(...ejemembers);
   combinedArray.push(...sys2members);
-
   return combinedArray;
 }
 ```
 
-- DWP: example code snippet with correct allocation of members to the DWP prior rights group:
+#### DWP
 
-```ts
+```typescript
 export function combineDWPArrays(
   wcmembers: any[],
   dmirmembers: any[],
@@ -139,9 +241,9 @@ export function combineDWPArrays(
 }
 ```
 
-- DMIR: example code snippet with correct allocation of members to the DMIR prior rights group:
+#### DMIR
 
-```ts
+```typescript
 export function combineDMIRArrays(
   wcmembers: any[],
   dmirmembers: any[],
@@ -193,9 +295,9 @@ export function combineDMIRArrays(
 }
 ```
 
-- EJ&E: example code snippet with correct allocation of members to the EJ&E prior rights group:
+#### EJ&E
 
-```ts
+```typescript
 export function combineEJEArrays(
   wcmembers: any[],
   dmirmembers: any[],
@@ -249,45 +351,11 @@ export function combineEJEArrays(
 }
 ```
 
-# Database
+### PDF Generation Example
 
-The database is a supabase database that is self hosted. The table that contains the members of the union is called "members".
-
-# Rosters
-
-The rosters will be separated by prior rights seniority. The rosters will be displayed in a table format with the following columns:
-
-- Name (First and Last)
-- PIN Number
-- Prior Rights Seniority Designation (WC, DMIR, DWP, SYS1, EJ&E, SYS2)
-- Engineer Date
-- DOB
-- Current Seniority Zone (Zones 1-10)
-- Desired Home Zone (if any)
-- Status (Active, Inactive, Pending, Retired, Set-Back)
-- Current Rank in the seniority system
-
-each row will be a card with the members information and the card will be clickable by anyone to bring up that members full information. Logged in admins will have the ability to edit the members information.
-
-# PDF Rosters
-
-The PDF rosters will be generated using react-pdf/renderer. The PDF will be a table format with the following columns:
-
-- Name (First and Last)
-- PIN Number
-- Prior Rights Seniority Designation (WC, DMIR, DWP, SYS1, EJ&E, SYS2)
-- Engineer Date
-- DOB
-- Current Seniority Zone (Zones 1-10)
-- Desired Home Zone (if any)
-- Status (Active, Inactive, Pending, Retired, Set-Back)
-
-example code snippet for pdf generation:
-
-```ts
+```typescript
 import React from "react";
 import { PDFDownloadLink, Document, Page, View, Text, StyleSheet } from "@react-pdf/renderer";
-import { Button } from "@/components/ui/button";
 
 const styles = StyleSheet.create({
   page: { padding: 30 },
@@ -301,19 +369,19 @@ const styles = StyleSheet.create({
 const RosterPDF = ({ data }) => (
   <Document>
     <Page size="A4" style={styles.page}>
-      <Text style={styles.title}>Team Roster</Text>
+      <Text style={styles.title}>Union Roster</Text>
       <View style={styles.table}>
         <View style={[styles.tableRow, styles.tableHeader]}>
           <Text style={styles.tableCell}>Name</Text>
-          <Text style={styles.tableCell}>Position</Text>
-          <Text style={styles.tableCell}>Contact</Text>
+          <Text style={styles.tableCell}>PIN</Text>
+          <Text style={styles.tableCell}>Prior Rights</Text>
           <Text style={styles.tableCell}>Status</Text>
         </View>
         {data.map((row, i) => (
           <View key={i} style={styles.tableRow}>
             <Text style={styles.tableCell}>{row.name}</Text>
-            <Text style={styles.tableCell}>{row.position}</Text>
-            <Text style={styles.tableCell}>{row.contact}</Text>
+            <Text style={styles.tableCell}>{row.pin}</Text>
+            <Text style={styles.tableCell}>{row.rights}</Text>
             <Text style={styles.tableCell}>{row.status}</Text>
           </View>
         ))}
@@ -321,12 +389,4 @@ const RosterPDF = ({ data }) => (
     </Page>
   </Document>
 );
-
-const RosterDownloadButton = ({ data }) => (
-  <PDFDownloadLink document={<RosterPDF data={data} />} fileName="team-roster.pdf">
-    {({ loading }) => <Button disabled={loading}>{loading ? "Generating PDF..." : "Download PDF"}</Button>}
-  </PDFDownloadLink>
-);
-
-export default RosterDownloadButton;
 ```
