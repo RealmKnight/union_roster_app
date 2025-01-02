@@ -1,12 +1,16 @@
+import type { Database } from "@/types/databasetypes";
+
+type MemberRow = Database["public"]["Tables"]["members"]["Row"];
+
 export type Member = {
-  id: string;
-  name: string;
-  pin_number: string;
-  system_sen_type: "WC" | "DMIR" | "DWP" | "SYS1" | "EJ&E" | "SYS2";
-  engineer_date: string;
-  dob: string;
-  current_zone: number;
-  desired_home_zone?: number;
-  status: "ACTIVE" | "INACTIVE" | "PENDING" | "RETIRED" | "SET-BACK";
+  id: string | null;
+  first_name: string | null;
+  last_name: string | null;
+  pin_number: number;
+  system_sen_type: Database["public"]["Enums"]["sys_seniority_type"] | null;
+  engineer_date: string | null;
+  date_of_birth: string | null;
+  zone: Database["public"]["Enums"]["zone"] | null;
   prior_vac_sys: number | null;
+  status: string | null;
 };

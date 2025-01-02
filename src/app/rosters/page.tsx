@@ -9,17 +9,34 @@ import { Button } from "@/components/ui/button";
 import { Download } from "lucide-react";
 import { getRosterMembers } from "@/lib/roster-utils";
 import type { Member } from "@/types/member";
+import type { Database } from "@/types/databasetypes";
 
 export default function RostersPage() {
-  const [selectedRoster, setSelectedRoster] = useState("WC");
+  const [selectedRoster, setSelectedRoster] = useState<Database["public"]["Enums"]["sys_seniority_type"]>("WC");
   const supabase = createClient();
 
   const { data: members, isLoading } = useQuery({
     queryKey: ["members"],
     queryFn: async () => {
-      const { data, error } = await supabase.from("members").select("*");
+      const { data, error } = await supabase.from("members").select("*").order("prior_vac_sys", { ascending: true });
+
       if (error) throw error;
-      return data as Member[];
+
+      // Transform the data to match our Member type
+      return data.map(
+        (member): Member => ({
+          id: member.id,
+          first_name: member.first_name,
+          last_name: member.last_name,
+          pin_number: member.pin_number,
+          system_sen_type: member.system_sen_type,
+          engineer_date: member.engineer_date,
+          date_of_birth: member.date_of_birth,
+          zone: member.zone,
+          prior_vac_sys: member.prior_vac_sys,
+          status: member.status,
+        })
+      );
     },
   });
 
@@ -33,7 +50,10 @@ export default function RostersPage() {
           <p className="text-sm text-muted-foreground">View and download seniority rosters by division</p>
         </div>
         <div className="flex items-center gap-4">
-          <Select value={selectedRoster} onValueChange={setSelectedRoster}>
+          <Select
+            value={selectedRoster}
+            onValueChange={(value) => setSelectedRoster(value as Database["public"]["Enums"]["sys_seniority_type"])}
+          >
             <SelectTrigger className="w-[180px]">
               <SelectValue placeholder="Select Roster" />
             </SelectTrigger>
@@ -59,29 +79,29 @@ export default function RostersPage() {
               <TableHead>PIN</TableHead>
               <TableHead>Prior Rights</TableHead>
               <TableHead>Engineer Date</TableHead>
-              <TableHead>Current Zone</TableHead>
-              <TableHead>Desired Zone</TableHead>
-              <TableHead>Status</TableHead>
+              <TableHead>Zone</TableHead>
+              <TableHead>Prior Vac Sys</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
             {isLoading ? (
               <TableRow>
-                <TableCell colSpan={8} className="text-center">
+                <TableCell colSpan={7} className="text-center">
                   Loading...
                 </TableCell>
               </TableRow>
             ) : (
               sortedMembers.map((member: Member, index: number) => (
-                <TableRow key={member.id}>
+                <TableRow key={member.id || index}>
                   <TableCell>{index + 1}</TableCell>
-                  <TableCell>{member.name}</TableCell>
+                  <TableCell>{`${member.first_name || ""} ${member.last_name || ""}`}</TableCell>
                   <TableCell>{member.pin_number}</TableCell>
                   <TableCell>{member.system_sen_type}</TableCell>
-                  <TableCell>{new Date(member.engineer_date).toLocaleDateString()}</TableCell>
-                  <TableCell>{member.current_zone}</TableCell>
-                  <TableCell>{member.desired_home_zone || "-"}</TableCell>
-                  <TableCell>{member.status}</TableCell>
+                  <TableCell>
+                    {member.engineer_date ? new Date(member.engineer_date).toLocaleDateString() : "-"}
+                  </TableCell>
+                  <TableCell>{member.zone || "-"}</TableCell>
+                  <TableCell>{member.prior_vac_sys || "-"}</TableCell>
                 </TableRow>
               ))
             )}
