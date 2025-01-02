@@ -85,7 +85,7 @@ export async function NavBar() {
                 <span>Rosters</span>
               </Link>
               {user && (
-                <Link href="/admin" className="flex items-center space-x-2">
+                <Link href="/admin/dashboard" className="flex items-center space-x-2">
                   <Settings className="h-4 w-4" />
                   <span>Admin</span>
                 </Link>
@@ -105,7 +105,7 @@ export async function NavBar() {
             </Button>
           ) : (
             <Button variant="ghost" asChild>
-              <Link href="/login">Admin Sign In</Link>
+              <Link href="/admin/login">Admin Sign In</Link>
             </Button>
           )}
         </div>

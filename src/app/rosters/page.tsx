@@ -15,32 +15,37 @@ export default function RostersPage() {
   const [selectedRoster, setSelectedRoster] = useState<Database["public"]["Enums"]["sys_seniority_type"]>("WC");
   const supabase = createClient();
 
-  const { data: members, isLoading } = useQuery({
+  const {
+    data: members,
+    isLoading,
+    error,
+  } = useQuery({
     queryKey: ["members"],
     queryFn: async () => {
-      const { data, error } = await supabase.from("members").select("*").order("prior_vac_sys", { ascending: true });
+      const { data, error } = await supabase
+        .from("members")
+        .select("*")
+        .eq("deleted", false)
+        .order("prior_vac_sys", { ascending: true });
 
-      if (error) throw error;
+      if (error) {
+        console.error("Supabase error:", error);
+        throw error;
+      }
 
-      // Transform the data to match our Member type
-      return data.map(
-        (member): Member => ({
-          id: member.id,
-          first_name: member.first_name,
-          last_name: member.last_name,
-          pin_number: member.pin_number,
-          system_sen_type: member.system_sen_type,
-          engineer_date: member.engineer_date,
-          date_of_birth: member.date_of_birth,
-          zone: member.zone,
-          prior_vac_sys: member.prior_vac_sys,
-          status: member.status,
-        })
-      );
+      return data as Member[];
     },
   });
 
   const sortedMembers = members ? getRosterMembers(members, selectedRoster) : [];
+
+  if (error) {
+    return (
+      <div className="container py-6">
+        <div className="text-red-500">Error loading members: {error.message}</div>
+      </div>
+    );
+  }
 
   return (
     <div className="container py-6 space-y-6">
@@ -81,12 +86,13 @@ export default function RostersPage() {
               <TableHead>Engineer Date</TableHead>
               <TableHead>Zone</TableHead>
               <TableHead>Prior Vac Sys</TableHead>
+              <TableHead>Division</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
             {isLoading ? (
               <TableRow>
-                <TableCell colSpan={7} className="text-center">
+                <TableCell colSpan={8} className="text-center">
                   Loading...
                 </TableCell>
               </TableRow>
@@ -102,6 +108,7 @@ export default function RostersPage() {
                   </TableCell>
                   <TableCell>{member.zone || "-"}</TableCell>
                   <TableCell>{member.prior_vac_sys || "-"}</TableCell>
+                  <TableCell>{member.division || "-"}</TableCell>
                 </TableRow>
               ))
             )}
