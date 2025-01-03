@@ -27,11 +27,13 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body className={`${geistSans.variable} ${geistMono.variable} antialiased min-h-screen flex flex-col p-4`}>
+      <body className={`${geistSans.variable} ${geistMono.variable} antialiased min-h-screen flex flex-col`}>
         <QueryProvider>
           <ThemeProvider attribute="class" defaultTheme="light" enableSystem={false} disableTransitionOnChange>
-            <NavBar />
-            <main className="flex-1">{children}</main>
+            <div className="px-4">
+              <NavBar />
+              <main className="flex-1">{children}</main>
+            </div>
           </ThemeProvider>
         </QueryProvider>
       </body>

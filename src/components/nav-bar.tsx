@@ -11,6 +11,7 @@ import {
 import { Home, FileText, Wrench, Settings, Menu } from "lucide-react";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { SignOutButton } from "@/components/sign-out-button";
+import { ThemeSwitcher } from "@/components/theme-switcher";
 
 export async function NavBar() {
   const supabase = await createClient();
@@ -58,11 +59,11 @@ export async function NavBar() {
   );
 
   return (
-    <header className="border-b">
+    <header className="border-b sticky top-0 bg-background z-50">
       <div className="container flex h-14 items-center">
         {/* Desktop Navigation */}
         <NavigationMenu className="hidden md:flex">
-          <NavigationMenuList>
+          <NavigationMenuList className="gap-2">
             <NavItems />
           </NavigationMenuList>
         </NavigationMenu>
@@ -100,6 +101,8 @@ export async function NavBar() {
         </Sheet>
 
         <div className="ml-auto flex items-center space-x-4">
+          {/* Theme Switcher */}
+          <ThemeSwitcher />
           {user ? (
             <SignOutButton />
           ) : (

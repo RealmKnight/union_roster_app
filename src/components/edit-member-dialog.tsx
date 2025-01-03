@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import { createClient } from "@/utils/supabase/client";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
@@ -56,6 +56,24 @@ export function EditMemberDialog({ member, open, onOpenChange }: EditMemberDialo
     misc_notes: member.misc_notes || "",
   });
 
+  // Update formData when member changes
+  useEffect(() => {
+    setFormData({
+      first_name: member.first_name || "",
+      last_name: member.last_name || "",
+      pin_number: member.pin_number || "",
+      system_sen_type: member.system_sen_type || "",
+      engineer_date: member.engineer_date ? new Date(member.engineer_date).toISOString().split("T")[0] : "",
+      zone: member.zone || "",
+      prior_vac_sys: member.prior_vac_sys || "",
+      division: member.division || "",
+      status: member.status || "ACTIVE",
+      company_hire_date: member.company_hire_date ? new Date(member.company_hire_date).toISOString().split("T")[0] : "",
+      date_of_birth: member.date_of_birth ? new Date(member.date_of_birth).toISOString().split("T")[0] : "",
+      misc_notes: member.misc_notes || "",
+    });
+  }, [member]);
+
   const handleChange = (field: string, value: string | number) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
   };
@@ -63,9 +81,44 @@ export function EditMemberDialog({ member, open, onOpenChange }: EditMemberDialo
   const handleSubmit = async () => {
     setIsLoading(true);
     try {
-      const { error } = await supabase.from("members").update(formData).eq("pin_number", member.pin_number);
+      // Prepare update data with proper null handling
+      const updateData = {
+        ...formData,
+        // Convert numeric fields
+        pin_number: Number(formData.pin_number),
+        prior_vac_sys: formData.prior_vac_sys ? Number(formData.prior_vac_sys) : null,
 
-      if (error) throw error;
+        // Handle enum fields - convert empty strings to null
+        zone: formData.zone || null,
+        division: formData.division || null,
+        system_sen_type: formData.system_sen_type || null,
+
+        // Handle date fields - convert empty strings to null
+        engineer_date: formData.engineer_date || null,
+        company_hire_date: formData.company_hire_date || null,
+        date_of_birth: formData.date_of_birth || null,
+
+        // Handle optional text fields
+        misc_notes: formData.misc_notes || null,
+        first_name: formData.first_name || null,
+        last_name: formData.last_name || null,
+      };
+
+      console.log("Updating member with data:", updateData);
+
+      const { data, error } = await supabase
+        .from("members")
+        .update(updateData)
+        .eq("pin_number", member.pin_number)
+        .select();
+
+      if (error) {
+        console.error("Supabase error:", error);
+        alert(`Error updating member: ${error.message}`);
+        return;
+      }
+
+      console.log("Update successful:", data);
 
       // Invalidate and refetch
       await queryClient.invalidateQueries({ queryKey: ["all-members"] });

@@ -12,14 +12,12 @@ export const sortByPriorVacSys = (a: Member, b: Member) => {
 };
 
 export const getRosterMembers = (members: Member[], type: string) => {
-  const activeMembers = members.filter((m) => m.status === "ACTIVE");
-
-  const wcmembers = activeMembers.filter((m) => m.system_sen_type === "WC").sort(sortByPriorVacSys);
-  const dmirmembers = activeMembers.filter((m) => m.system_sen_type === "DMIR").sort(sortByPriorVacSys);
-  const dwpmembers = activeMembers.filter((m) => m.system_sen_type === "DWP").sort(sortByPriorVacSys);
-  const sys1members = activeMembers.filter((m) => m.system_sen_type === "SYS1").sort(sortByPriorVacSys);
-  const ejemembers = activeMembers.filter((m) => m.system_sen_type === "EJ&E").sort(sortByPriorVacSys);
-  const sys2members = activeMembers.filter((m) => m.system_sen_type === "SYS2").sort(sortByPriorVacSys);
+  const wcmembers = members.filter((m) => m.system_sen_type === "WC").sort(sortByPriorVacSys);
+  const dmirmembers = members.filter((m) => m.system_sen_type === "DMIR").sort(sortByPriorVacSys);
+  const dwpmembers = members.filter((m) => m.system_sen_type === "DWP").sort(sortByPriorVacSys);
+  const sys1members = members.filter((m) => m.system_sen_type === "SYS1").sort(sortByPriorVacSys);
+  const ejemembers = members.filter((m) => m.system_sen_type === "EJ&E").sort(sortByPriorVacSys);
+  const sys2members = members.filter((m) => m.system_sen_type === "SYS2").sort(sortByPriorVacSys);
 
   switch (type) {
     case "WC":
