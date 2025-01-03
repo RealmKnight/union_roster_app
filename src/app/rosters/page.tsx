@@ -10,7 +10,7 @@ import { Switch } from "@/components/ui/switch";
 import { Download } from "lucide-react";
 import { getRosterMembers } from "@/lib/roster-utils";
 import { DownloadRosterDialog } from "@/components/download-roster-dialog";
-import RosterPDF from "@/lib/pdf-utils";
+import * as RosterPDF from "@/lib/pdf-utils";
 import { PDFDownloadLink } from "@react-pdf/renderer";
 import type { Member } from "@/types/member";
 import type { Database } from "@/types/databasetypes";

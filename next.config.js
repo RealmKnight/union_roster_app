@@ -12,6 +12,13 @@ const nextConfig = {
     }
     return config;
   },
+  experimental: {
+    turbo: {
+      loaders: {
+        // Configure loaders for Turbopack here if needed
+      },
+    },
+  },
 };
 
 module.exports = nextConfig;
