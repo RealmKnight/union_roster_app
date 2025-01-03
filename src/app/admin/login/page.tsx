@@ -32,8 +32,8 @@ export default function AdminLoginPage() {
       }
 
       if (data?.user) {
-        // Check if user has admin role (you'll need to set up this check based on your user roles)
         router.push("/admin/dashboard");
+        router.refresh();
       }
     } catch (err) {
       setError("An unexpected error occurred");

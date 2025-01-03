@@ -10,6 +10,7 @@ import {
 } from "@/components/ui/navigation-menu";
 import { Home, FileText, Wrench, Settings, Menu } from "lucide-react";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
+import { SignOutButton } from "@/components/sign-out-button";
 
 export async function NavBar() {
   const supabase = await createClient();
@@ -37,7 +38,7 @@ export async function NavBar() {
       </NavigationMenuItem>
       {user && (
         <NavigationMenuItem>
-          <Link href="/admin" legacyBehavior passHref>
+          <Link href="/admin/dashboard" legacyBehavior passHref>
             <NavigationMenuLink className={navigationMenuTriggerStyle()}>
               <Settings className="mr-2 h-4 w-4" />
               Admin
@@ -100,9 +101,7 @@ export async function NavBar() {
 
         <div className="ml-auto flex items-center space-x-4">
           {user ? (
-            <Button variant="ghost" asChild>
-              <Link href="/api/auth/signout">Sign Out</Link>
-            </Button>
+            <SignOutButton />
           ) : (
             <Button variant="ghost" asChild>
               <Link href="/admin/login">Admin Sign In</Link>
