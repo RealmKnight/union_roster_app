@@ -314,7 +314,7 @@ export default function AdminDashboard() {
               <SortableHeader column="system_sen_type" label="Prior Rights" />
               <SortableHeader column="engineer_date" label="Engineer Date" />
               <ZoneHeader />
-              <SortableHeader column="prior_vac_sys" label="Prior Vac Sys" />
+              <SortableHeader column="prior_vac_sys" label="Prior Rights Rank" />
               <DivisionHeader />
               <SortableHeader column="status" label="Status" />
               <TableHead className="text-right">Actions</TableHead>

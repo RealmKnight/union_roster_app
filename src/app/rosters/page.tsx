@@ -120,7 +120,7 @@ export default function RostersPage() {
               <TableHead>Prior Rights</TableHead>
               <TableHead>Engineer Date</TableHead>
               <TableHead>Zone</TableHead>
-              {isAdmin && <TableHead>Prior Vac Sys</TableHead>}
+              {isAdmin && <TableHead>Prior Rights Rank</TableHead>}
               <TableHead>Division</TableHead>
             </TableRow>
           </TableHeader>

@@ -52,7 +52,7 @@ const OPTIONAL_FIELDS = [
   { id: "date_of_birth", label: "Date of Birth" },
   { id: "zone", label: "Zone" },
   { id: "division", label: "Division" },
-  { id: "prior_vac_sys", label: "Prior Vac System" },
+  { id: "prior_vac_sys", label: "Prior Rights Rank" },
 ];
 
 export function DownloadRosterDialog({

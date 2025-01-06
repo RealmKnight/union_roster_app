@@ -53,7 +53,7 @@ export async function generatePDF({
     ...(selectedFields.includes("date_of_birth") ? [{ header: "Date of Birth", key: "date_of_birth" }] : []),
     ...(selectedFields.includes("zone") ? [{ header: "Zone", key: "zone" }] : []),
     ...(selectedFields.includes("division") ? [{ header: "Division", key: "division" }] : []),
-    ...(selectedFields.includes("prior_vac_sys") ? [{ header: "Prior Vac Sys", key: "prior_vac_sys" }] : []),
+    ...(selectedFields.includes("prior_vac_sys") ? [{ header: "Prior Rights Rank", key: "prior_vac_sys" }] : []),
   ];
 
   // Create header row
