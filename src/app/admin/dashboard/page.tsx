@@ -14,6 +14,7 @@ import type { Database } from "@/types/databasetypes";
 import { EditMemberDialog } from "@/components/edit-member-dialog";
 import { Input } from "@/components/ui/input";
 import { getRosterMembers } from "@/lib/roster-utils";
+import { AddMemberDialog } from "@/components/add-member-dialog";
 
 type SortConfig = {
   key: keyof Member | null;
@@ -54,6 +55,7 @@ export default function AdminDashboard() {
   const [editDialogOpen, setEditDialogOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [rosterOrder, setRosterOrder] = useState<RosterOrder>("default");
+  const [addDialogOpen, setAddDialogOpen] = useState(false);
 
   // Check if user is authenticated
   useEffect(() => {
@@ -266,7 +268,7 @@ export default function AdminDashboard() {
               Show Inactive Members
             </label>
           </div>
-          <Button>
+          <Button onClick={() => setAddDialogOpen(true)}>
             <Plus className="h-4 w-4 mr-2" />
             Add Member
           </Button>
@@ -395,6 +397,7 @@ export default function AdminDashboard() {
       {selectedMember && (
         <EditMemberDialog member={selectedMember} open={editDialogOpen} onOpenChange={setEditDialogOpen} />
       )}
+      <AddMemberDialog open={addDialogOpen} onOpenChange={setAddDialogOpen} />
     </div>
   );
 }
