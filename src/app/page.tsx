@@ -1,6 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import Link from "next/link";
+import Image from "next/image";
 import { FileText, Users, BookOpen, Scale } from "lucide-react";
 
 export default function Home() {
@@ -10,6 +11,9 @@ export default function Home() {
       <section className="w-full bg-primary/5 py-12 md:py-24">
         <div className="container px-4 md:px-6">
           <div className="flex flex-col items-center space-y-4 text-center">
+            <div className="relative w-32 h-32 mb-4">
+              <Image src="/BLET_Logo.png" alt="BLET Logo" fill priority className="object-contain" />
+            </div>
             <h1 className="text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl">
               Brotherhood of Locomotive Engineers and Trainmen
             </h1>

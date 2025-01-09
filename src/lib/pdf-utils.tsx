@@ -90,6 +90,30 @@ export async function generatePDF({
     return row;
   });
 
+  // Calculate column widths based on content
+  const calculateColumnWidths = (columns: Array<{ header: string; key: string }>, bodyRows: any[][]) => {
+    return columns.map((_, colIndex) => {
+      // Get all values in this column including header
+      const columnValues = [headerRow[colIndex].text, ...bodyRows.map((row) => row[colIndex]?.toString() || "")];
+
+      // Find the maximum length in this column
+      const maxLength = Math.max(...columnValues.map((val) => val.length));
+
+      // Assign weights based on column type and content
+      if (colIndex === 0) return "auto"; // Rank column (smallest)
+      if (colIndex === 1) return "*"; // Name column (flexible)
+      if (colIndex === 2) return "auto"; // PIN column (fixed width)
+
+      // For date columns, use a fixed width
+      if (["engineer_date", "date_of_birth"].includes(columns[colIndex]?.key)) {
+        return "auto";
+      }
+
+      // For other columns, base it on content length
+      return maxLength < 10 ? "auto" : "*";
+    });
+  };
+
   const docDefinition: TDocumentDefinitions = {
     content: [
       {
@@ -112,7 +136,7 @@ export async function generatePDF({
       {
         table: {
           headerRows: 1,
-          widths: Array(columns.length).fill("*"),
+          widths: calculateColumnWidths(columns, bodyRows),
           body: [headerRow, ...bodyRows],
         },
       },
