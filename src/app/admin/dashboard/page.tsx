@@ -7,7 +7,7 @@ import { useQuery } from "@tanstack/react-query";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
-import { Edit, Plus, ArrowUpDown, ArrowUp, ArrowDown, Search } from "lucide-react";
+import { Edit, Plus, ArrowUpDown, ArrowUp, ArrowDown, Search, Download } from "lucide-react";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import type { Member } from "@/types/member";
 import type { Database } from "@/types/databasetypes";
@@ -15,6 +15,7 @@ import { EditMemberDialog } from "@/components/edit-member-dialog";
 import { Input } from "@/components/ui/input";
 import { getRosterMembers } from "@/lib/roster-utils";
 import { AddMemberDialog } from "@/components/add-member-dialog";
+import { DownloadRosterDialog } from "@/components/download-roster-dialog";
 
 type SortConfig = {
   key: keyof Member | null;
@@ -24,7 +25,7 @@ type SortConfig = {
 type Division = Database["public"]["Enums"]["division"];
 type Zone = Database["public"]["Enums"]["zone"];
 type ActiveFilter = "none" | "zone" | "division";
-type RosterOrder = "default" | "wc" | "dmir" | "dwp" | "eje";
+type RosterOrder = "default" | "wc" | "dmir" | "dwp" | "eje" | "osl-wc" | "osl-dmir" | "osl-dwp" | "osl-eje";
 
 const DIVISIONS: Division[] = ["163", "173", "174", "175", "184", "185", "188", "209", "520"];
 const ZONES: Zone[] = [
@@ -56,6 +57,8 @@ export default function AdminDashboard() {
   const [searchQuery, setSearchQuery] = useState("");
   const [rosterOrder, setRosterOrder] = useState<RosterOrder>("default");
   const [addDialogOpen, setAddDialogOpen] = useState(false);
+  const [showDownloadDialog, setShowDownloadDialog] = useState(false);
+  const [selectedFields, setSelectedFields] = useState<string[]>([]);
 
   // Check if user is authenticated
   useEffect(() => {
@@ -272,6 +275,9 @@ export default function AdminDashboard() {
             <Plus className="h-4 w-4 mr-2" />
             Add Member
           </Button>
+          <Button variant="outline" size="icon" onClick={() => setShowDownloadDialog(true)}>
+            <Download className="h-4 w-4" />
+          </Button>
         </div>
       </div>
 
@@ -299,10 +305,14 @@ export default function AdminDashboard() {
           </SelectTrigger>
           <SelectContent>
             <SelectItem value="default">Default (Name Order)</SelectItem>
-            <SelectItem value="wc">WC Roster Order</SelectItem>
-            <SelectItem value="dmir">DMIR Roster Order</SelectItem>
-            <SelectItem value="dwp">DWP Roster Order</SelectItem>
-            <SelectItem value="eje">EJ&E Roster Order</SelectItem>
+            <SelectItem value="wc">WC Roster</SelectItem>
+            <SelectItem value="dmir">DMIR Roster</SelectItem>
+            <SelectItem value="dwp">DWP Roster</SelectItem>
+            <SelectItem value="eje">EJ&E Roster</SelectItem>
+            <SelectItem value="osl-wc">WC Order Selection List</SelectItem>
+            <SelectItem value="osl-dmir">DMIR Order Selection List</SelectItem>
+            <SelectItem value="osl-dwp">DWP Order Selection List</SelectItem>
+            <SelectItem value="osl-eje">EJ&E Order Selection List</SelectItem>
           </SelectContent>
         </Select>
       </div>
@@ -398,6 +408,19 @@ export default function AdminDashboard() {
         <EditMemberDialog member={selectedMember} open={editDialogOpen} onOpenChange={setEditDialogOpen} />
       )}
       <AddMemberDialog open={addDialogOpen} onOpenChange={setAddDialogOpen} />
+      <DownloadRosterDialog
+        open={showDownloadDialog}
+        onOpenChange={setShowDownloadDialog}
+        members={members || []}
+        selectedRoster={
+          rosterOrder === "default"
+            ? "Admin"
+            : rosterOrder.startsWith("osl-")
+            ? `${rosterOrder.replace(/^osl-/i, "").toUpperCase()} Order Selection List`
+            : `${rosterOrder.toUpperCase()} Roster`
+        }
+        onDownload={setSelectedFields}
+      />
     </div>
   );
 }

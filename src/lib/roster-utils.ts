@@ -11,15 +11,26 @@ export const sortByPriorVacSys = (a: Member, b: Member) => {
   return String(a.prior_vac_sys).localeCompare(String(b.prior_vac_sys));
 };
 
-export const getRosterMembers = (members: Member[], type: string) => {
-  const wcmembers = members.filter((m) => m.system_sen_type === "WC").sort(sortByPriorVacSys);
-  const dmirmembers = members.filter((m) => m.system_sen_type === "DMIR").sort(sortByPriorVacSys);
-  const dwpmembers = members.filter((m) => m.system_sen_type === "DWP").sort(sortByPriorVacSys);
-  const sys1members = members.filter((m) => m.system_sen_type === "SYS1").sort(sortByPriorVacSys);
-  const ejemembers = members.filter((m) => m.system_sen_type === "EJ&E").sort(sortByPriorVacSys);
-  const sys2members = members.filter((m) => m.system_sen_type === "SYS2").sort(sortByPriorVacSys);
+// Filter out members with misc_notes for OSL
+const filterMembersForOSL = (members: Member[]) => {
+  return members.filter((member) => !member.misc_notes);
+};
 
-  switch (type) {
+export const getRosterMembers = (members: Member[], type: string) => {
+  // For OSL rosters, filter out members with misc_notes first
+  const filteredMembers = type.toLowerCase().startsWith("osl-") ? filterMembersForOSL(members) : members;
+
+  const wcmembers = filteredMembers.filter((m) => m.system_sen_type === "WC").sort(sortByPriorVacSys);
+  const dmirmembers = filteredMembers.filter((m) => m.system_sen_type === "DMIR").sort(sortByPriorVacSys);
+  const dwpmembers = filteredMembers.filter((m) => m.system_sen_type === "DWP").sort(sortByPriorVacSys);
+  const sys1members = filteredMembers.filter((m) => m.system_sen_type === "SYS1").sort(sortByPriorVacSys);
+  const ejemembers = filteredMembers.filter((m) => m.system_sen_type === "EJ&E").sort(sortByPriorVacSys);
+  const sys2members = filteredMembers.filter((m) => m.system_sen_type === "SYS2").sort(sortByPriorVacSys);
+
+  // Remove the OSL- prefix if present for the switch statement
+  const rosterType = type.replace(/^osl-/i, "").toUpperCase();
+
+  switch (rosterType) {
     case "WC":
       return combineWCArrays(wcmembers, dmirmembers, dwpmembers, sys1members, ejemembers, sys2members);
     case "DMIR":
