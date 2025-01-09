@@ -136,10 +136,13 @@ export default function AdminDashboard() {
   });
 
   const handleSort = (key: keyof Member) => {
-    setSortConfig((current) => ({
-      key,
-      direction: current.key === key && current.direction === "asc" ? "desc" : "asc",
-    }));
+    // Only allow sorting in default roster order
+    if (rosterOrder === "default") {
+      setSortConfig((current) => ({
+        key,
+        direction: current.key === key && current.direction === "asc" ? "desc" : "asc",
+      }));
+    }
   };
 
   const SortableHeader = ({ column, label }: { column: keyof Member; label: string }) => {
@@ -322,7 +325,7 @@ export default function AdminDashboard() {
           <table className="w-full">
             <thead className="sticky top-0 bg-background">
               <tr className="border-b">
-                <th className="h-12 px-4 text-left align-middle font-medium">
+                <TableHead>
                   <Button
                     variant="ghost"
                     onClick={() => handleSort("last_name")}
@@ -339,15 +342,100 @@ export default function AdminDashboard() {
                       <ArrowUpDown className="h-4 w-4 opacity-50" />
                     )}
                   </Button>
-                </th>
-                <th className="h-12 px-4 text-left align-middle font-medium">PIN</th>
-                <th className="h-12 px-4 text-left align-middle font-medium">Prior Rights</th>
-                <th className="h-12 px-4 text-left align-middle font-medium">Engineer Date</th>
-                <th className="h-12 px-4 text-left align-middle font-medium">Zone</th>
-                <th className="h-12 px-4 text-left align-middle font-medium">Prior Rights Rank</th>
-                <th className="h-12 px-4 text-left align-middle font-medium">Division</th>
-                <th className="h-12 px-4 text-left align-middle font-medium">Status</th>
-                <th className="h-12 px-4 text-right align-middle font-medium">Actions</th>
+                </TableHead>
+                <TableHead>
+                  <Button
+                    variant="ghost"
+                    onClick={() => handleSort("pin_number")}
+                    className="h-8 flex items-center gap-1 hover:bg-transparent"
+                  >
+                    PIN
+                    {sortConfig.key === "pin_number" ? (
+                      sortConfig.direction === "asc" ? (
+                        <ArrowUp className="h-4 w-4" />
+                      ) : (
+                        <ArrowDown className="h-4 w-4" />
+                      )
+                    ) : (
+                      <ArrowUpDown className="h-4 w-4 opacity-50" />
+                    )}
+                  </Button>
+                </TableHead>
+                <TableHead>
+                  <Button
+                    variant="ghost"
+                    onClick={() => handleSort("system_sen_type")}
+                    className="h-8 flex items-center gap-1 hover:bg-transparent"
+                  >
+                    Prior Rights
+                    {sortConfig.key === "system_sen_type" ? (
+                      sortConfig.direction === "asc" ? (
+                        <ArrowUp className="h-4 w-4" />
+                      ) : (
+                        <ArrowDown className="h-4 w-4" />
+                      )
+                    ) : (
+                      <ArrowUpDown className="h-4 w-4 opacity-50" />
+                    )}
+                  </Button>
+                </TableHead>
+                <TableHead>
+                  <Button
+                    variant="ghost"
+                    onClick={() => handleSort("engineer_date")}
+                    className="h-8 flex items-center gap-1 hover:bg-transparent"
+                  >
+                    Engineer Date
+                    {sortConfig.key === "engineer_date" ? (
+                      sortConfig.direction === "asc" ? (
+                        <ArrowUp className="h-4 w-4" />
+                      ) : (
+                        <ArrowDown className="h-4 w-4" />
+                      )
+                    ) : (
+                      <ArrowUpDown className="h-4 w-4 opacity-50" />
+                    )}
+                  </Button>
+                </TableHead>
+                <ZoneHeader />
+                <TableHead>
+                  <Button
+                    variant="ghost"
+                    onClick={() => handleSort("prior_vac_sys")}
+                    className="h-8 flex items-center gap-1 hover:bg-transparent"
+                  >
+                    Prior Rights Rank
+                    {sortConfig.key === "prior_vac_sys" ? (
+                      sortConfig.direction === "asc" ? (
+                        <ArrowUp className="h-4 w-4" />
+                      ) : (
+                        <ArrowDown className="h-4 w-4" />
+                      )
+                    ) : (
+                      <ArrowUpDown className="h-4 w-4 opacity-50" />
+                    )}
+                  </Button>
+                </TableHead>
+                <DivisionHeader />
+                <TableHead>
+                  <Button
+                    variant="ghost"
+                    onClick={() => handleSort("status")}
+                    className="h-8 flex items-center gap-1 hover:bg-transparent"
+                  >
+                    Status
+                    {sortConfig.key === "status" ? (
+                      sortConfig.direction === "asc" ? (
+                        <ArrowUp className="h-4 w-4" />
+                      ) : (
+                        <ArrowDown className="h-4 w-4" />
+                      )
+                    ) : (
+                      <ArrowUpDown className="h-4 w-4 opacity-50" />
+                    )}
+                  </Button>
+                </TableHead>
+                <TableHead className="h-12 px-4 text-right align-middle font-medium">Actions</TableHead>
               </tr>
             </thead>
             <tbody>
