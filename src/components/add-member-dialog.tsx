@@ -58,6 +58,22 @@ export function AddMemberDialog({ open, onOpenChange }: AddMemberDialogProps) {
   useEffect(() => {
     const fetchNextPriorRightsRank = async () => {
       if (open) {
+        // Reset form data first
+        setFormData({
+          first_name: "",
+          last_name: "",
+          pin_number: "",
+          system_sen_type: "SYS2",
+          engineer_date: "",
+          zone: "",
+          prior_vac_sys: "",
+          division: "",
+          status: "ACTIVE",
+          company_hire_date: "",
+          date_of_birth: "",
+          misc_notes: "",
+        });
+
         try {
           const { data, error } = await supabase
             .from("members")
