@@ -110,45 +110,47 @@ export default function RostersPage() {
         </div>
       </div>
 
-      <div className="border rounded-lg">
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead>Rank</TableHead>
-              <TableHead>Name</TableHead>
-              <TableHead>PIN</TableHead>
-              <TableHead>Prior Rights</TableHead>
-              <TableHead>Engineer Date</TableHead>
-              <TableHead>Zone</TableHead>
-              {isAdmin && <TableHead>Prior Rights Rank</TableHead>}
-              <TableHead>Division</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {isLoading ? (
-              <TableRow>
-                <TableCell colSpan={isAdmin ? 8 : 7} className="text-center">
-                  Loading...
-                </TableCell>
-              </TableRow>
-            ) : (
-              sortedMembers.map((member: Member, index: number) => (
-                <TableRow key={member.id || index}>
-                  <TableCell>{index + 1}</TableCell>
-                  <TableCell>{`${member.first_name || ""} ${member.last_name || ""}`}</TableCell>
-                  <TableCell>{member.pin_number}</TableCell>
-                  <TableCell>{member.system_sen_type}</TableCell>
-                  <TableCell>
-                    {member.engineer_date ? new Date(member.engineer_date).toLocaleDateString() : "-"}
-                  </TableCell>
-                  <TableCell>{member.zone || "-"}</TableCell>
-                  {isAdmin && <TableCell>{member.prior_vac_sys || "-"}</TableCell>}
-                  <TableCell>{member.division || member.misc_notes || "-"}</TableCell>
-                </TableRow>
-              ))
-            )}
-          </TableBody>
-        </Table>
+      <div className="flex flex-col h-[calc(100vh-12rem)] border rounded-lg">
+        <div className="flex-1 overflow-auto relative">
+          <table className="w-full">
+            <thead className="sticky top-0 bg-background">
+              <tr className="border-b">
+                <th className="h-12 px-4 text-left align-middle font-medium">Rank</th>
+                <th className="h-12 px-4 text-left align-middle font-medium">Name</th>
+                <th className="h-12 px-4 text-left align-middle font-medium">PIN</th>
+                <th className="h-12 px-4 text-left align-middle font-medium">Prior Rights</th>
+                <th className="h-12 px-4 text-left align-middle font-medium">Engineer Date</th>
+                <th className="h-12 px-4 text-left align-middle font-medium">Zone</th>
+                {isAdmin && <th className="h-12 px-4 text-left align-middle font-medium">Prior Rights Rank</th>}
+                <th className="h-12 px-4 text-left align-middle font-medium">Division</th>
+              </tr>
+            </thead>
+            <tbody>
+              {isLoading ? (
+                <tr>
+                  <td colSpan={isAdmin ? 8 : 7} className="h-12 px-4 align-middle text-center">
+                    Loading...
+                  </td>
+                </tr>
+              ) : (
+                sortedMembers.map((member: Member, index: number) => (
+                  <tr key={member.id || index} className="border-b">
+                    <td className="h-12 px-4 align-middle">{index + 1}</td>
+                    <td className="h-12 px-4 align-middle">{`${member.first_name || ""} ${member.last_name || ""}`}</td>
+                    <td className="h-12 px-4 align-middle">{member.pin_number}</td>
+                    <td className="h-12 px-4 align-middle">{member.system_sen_type}</td>
+                    <td className="h-12 px-4 align-middle">
+                      {member.engineer_date ? new Date(member.engineer_date + "T00:00:00").toLocaleDateString() : "-"}
+                    </td>
+                    <td className="h-12 px-4 align-middle">{member.zone || "-"}</td>
+                    {isAdmin && <td className="h-12 px-4 align-middle">{member.prior_vac_sys || "-"}</td>}
+                    <td className="h-12 px-4 align-middle">{member.division || member.misc_notes || "-"}</td>
+                  </tr>
+                ))
+              )}
+            </tbody>
+          </table>
+        </div>
       </div>
 
       <DownloadRosterDialog

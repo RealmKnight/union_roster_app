@@ -305,72 +305,91 @@ export default function AdminDashboard() {
         </Select>
       </div>
 
-      <div className="border rounded-lg">
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <SortableHeader column="last_name" label="Name" />
-              <SortableHeader column="pin_number" label="PIN" />
-              <SortableHeader column="system_sen_type" label="Prior Rights" />
-              <SortableHeader column="engineer_date" label="Engineer Date" />
-              <ZoneHeader />
-              <SortableHeader column="prior_vac_sys" label="Prior Rights Rank" />
-              <DivisionHeader />
-              <SortableHeader column="status" label="Status" />
-              <TableHead className="text-right">Actions</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {isLoading ? (
-              <TableRow>
-                <TableCell colSpan={9} className="text-center">
-                  Loading...
-                </TableCell>
-              </TableRow>
-            ) : members && members.length > 0 ? (
-              members.map((member, index) => (
-                <TableRow key={`${member.id || member.pin_number || index}`}>
-                  <TableCell>{`${member.first_name || ""} ${member.last_name || ""}`}</TableCell>
-                  <TableCell>{member.pin_number}</TableCell>
-                  <TableCell>{member.system_sen_type || "-"}</TableCell>
-                  <TableCell>
-                    {member.engineer_date ? new Date(member.engineer_date).toLocaleDateString() : "-"}
-                  </TableCell>
-                  <TableCell>{member.zone || "-"}</TableCell>
-                  <TableCell>{member.prior_vac_sys || "-"}</TableCell>
-                  <TableCell>{member.division || "-"}</TableCell>
-                  <TableCell>
-                    <span
-                      className={`px-2 py-1 rounded-full text-xs ${
-                        member.status === "IN-ACTIVE" ? "bg-red-100 text-red-800" : "bg-green-100 text-green-800"
-                      }`}
-                    >
-                      {member.status || "ACTIVE"}
-                    </span>
-                  </TableCell>
-                  <TableCell className="text-right">
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      onClick={() => {
-                        setSelectedMember(member);
-                        setEditDialogOpen(true);
-                      }}
-                    >
-                      <Edit className="h-4 w-4" />
-                    </Button>
-                  </TableCell>
-                </TableRow>
-              ))
-            ) : (
-              <TableRow>
-                <TableCell colSpan={9} className="text-center">
-                  No members found
-                </TableCell>
-              </TableRow>
-            )}
-          </TableBody>
-        </Table>
+      <div className="flex flex-col h-[calc(100vh-16rem)] border rounded-lg">
+        <div className="flex-1 overflow-auto relative">
+          <table className="w-full">
+            <thead className="sticky top-0 bg-background">
+              <tr className="border-b">
+                <th className="h-12 px-4 text-left align-middle font-medium">
+                  <Button
+                    variant="ghost"
+                    onClick={() => handleSort("last_name")}
+                    className="h-8 flex items-center gap-1 hover:bg-transparent"
+                  >
+                    Name
+                    {sortConfig.key === "last_name" ? (
+                      sortConfig.direction === "asc" ? (
+                        <ArrowUp className="h-4 w-4" />
+                      ) : (
+                        <ArrowDown className="h-4 w-4" />
+                      )
+                    ) : (
+                      <ArrowUpDown className="h-4 w-4 opacity-50" />
+                    )}
+                  </Button>
+                </th>
+                <th className="h-12 px-4 text-left align-middle font-medium">PIN</th>
+                <th className="h-12 px-4 text-left align-middle font-medium">Prior Rights</th>
+                <th className="h-12 px-4 text-left align-middle font-medium">Engineer Date</th>
+                <th className="h-12 px-4 text-left align-middle font-medium">Zone</th>
+                <th className="h-12 px-4 text-left align-middle font-medium">Prior Rights Rank</th>
+                <th className="h-12 px-4 text-left align-middle font-medium">Division</th>
+                <th className="h-12 px-4 text-left align-middle font-medium">Status</th>
+                <th className="h-12 px-4 text-right align-middle font-medium">Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              {isLoading ? (
+                <tr>
+                  <td colSpan={9} className="h-12 px-4 align-middle text-center">
+                    Loading...
+                  </td>
+                </tr>
+              ) : members && members.length > 0 ? (
+                members.map((member, index) => (
+                  <tr key={`${member.id || member.pin_number || index}`} className="border-b">
+                    <td className="h-12 px-4 align-middle">{`${member.first_name || ""} ${member.last_name || ""}`}</td>
+                    <td className="h-12 px-4 align-middle">{member.pin_number}</td>
+                    <td className="h-12 px-4 align-middle">{member.system_sen_type || "-"}</td>
+                    <td className="h-12 px-4 align-middle">
+                      {member.engineer_date ? new Date(member.engineer_date + "T00:00:00").toLocaleDateString() : "-"}
+                    </td>
+                    <td className="h-12 px-4 align-middle">{member.zone || "-"}</td>
+                    <td className="h-12 px-4 align-middle">{member.prior_vac_sys || "-"}</td>
+                    <td className="h-12 px-4 align-middle">{member.division || "-"}</td>
+                    <td className="h-12 px-4 align-middle">
+                      <span
+                        className={`px-2 py-1 rounded-full text-xs ${
+                          member.status === "IN-ACTIVE" ? "bg-red-100 text-red-800" : "bg-green-100 text-green-800"
+                        }`}
+                      >
+                        {member.status || "ACTIVE"}
+                      </span>
+                    </td>
+                    <td className="h-12 px-4 align-middle text-right">
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        onClick={() => {
+                          setSelectedMember(member);
+                          setEditDialogOpen(true);
+                        }}
+                      >
+                        <Edit className="h-4 w-4" />
+                      </Button>
+                    </td>
+                  </tr>
+                ))
+              ) : (
+                <tr>
+                  <td colSpan={9} className="h-12 px-4 align-middle text-center">
+                    No members found
+                  </td>
+                </tr>
+              )}
+            </tbody>
+          </table>
+        </div>
       </div>
 
       {selectedMember && (

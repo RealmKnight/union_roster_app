@@ -71,10 +71,10 @@ export async function generatePDF({
     ];
 
     if (selectedFields.includes("engineer_date")) {
-      row.push(member.engineer_date ? new Date(member.engineer_date).toLocaleDateString() : "-");
+      row.push(member.engineer_date ? new Date(member.engineer_date + "T00:00:00").toLocaleDateString() : "-");
     }
     if (selectedFields.includes("date_of_birth")) {
-      row.push(member.date_of_birth ? new Date(member.date_of_birth).toLocaleDateString() : "-");
+      row.push(member.date_of_birth ? new Date(member.date_of_birth + "T00:00:00").toLocaleDateString() : "-");
     }
     if (selectedFields.includes("zone")) {
       row.push(member.zone || "-");
