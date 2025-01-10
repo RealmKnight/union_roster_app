@@ -30,6 +30,7 @@ export const getRosterMembers = (members: Member[], type: string) => {
   // Remove the OSL- prefix if present for the switch statement
   const rosterType = type.replace(/^osl-/i, "").toUpperCase();
 
+  // Handle both regular and OSL rosters
   switch (rosterType) {
     case "WC":
       return combineWCArrays(wcmembers, dmirmembers, dwpmembers, sys1members, ejemembers, sys2members);
@@ -41,7 +42,7 @@ export const getRosterMembers = (members: Member[], type: string) => {
       return combineEJEArrays(wcmembers, dmirmembers, dwpmembers, sys1members, ejemembers, sys2members);
     default:
       // Log the roster type to help with debugging
-      console.log("Unrecognized roster type:", rosterType);
-      return members; // Return unmodified list instead of defaulting to WC roster
+      console.log("Unrecognized roster type:", rosterType, "from original type:", type);
+      return members;
   }
 };

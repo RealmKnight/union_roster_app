@@ -52,6 +52,7 @@ export function AddMemberDialog({ open, onOpenChange }: AddMemberDialogProps) {
     company_hire_date: "",
     date_of_birth: "",
     misc_notes: "",
+    home_zone: "",
   });
 
   // Fetch and set the next prior rights rank when dialog opens
@@ -72,6 +73,7 @@ export function AddMemberDialog({ open, onOpenChange }: AddMemberDialogProps) {
           company_hire_date: "",
           date_of_birth: "",
           misc_notes: "",
+          home_zone: "",
         });
 
         try {
@@ -228,6 +230,21 @@ export function AddMemberDialog({ open, onOpenChange }: AddMemberDialogProps) {
             <Select value={formData.zone} onValueChange={(value) => handleChange("zone", value)}>
               <SelectTrigger>
                 <SelectValue placeholder="Select Zone" />
+              </SelectTrigger>
+              <SelectContent>
+                {ZONES.map((zone) => (
+                  <SelectItem key={zone} value={zone}>
+                    {zone.charAt(0).toUpperCase() + zone.slice(1)}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="home_zone">Home Zone</Label>
+            <Select value={formData.home_zone} onValueChange={(value) => handleChange("home_zone", value)}>
+              <SelectTrigger>
+                <SelectValue placeholder="Select Home Zone" />
               </SelectTrigger>
               <SelectContent>
                 {ZONES.map((zone) => (

@@ -125,14 +125,15 @@ export default function AdminDashboard() {
 
       // Apply roster-specific sorting if needed
       if (rosterOrder !== "default" && data) {
-        return getRosterMembers(
-          data as Member[],
-          rosterOrder.startsWith("osl-")
-            ? rosterOrder.toUpperCase()
-            : rosterOrder === "eje"
-            ? "EJ&E"
+        const rosterTypeForCalculation = rosterOrder.startsWith("osl-")
+          ? rosterOrder.toLowerCase() === "osl-eje"
+            ? "OSL-EJ&E"
             : rosterOrder.toUpperCase()
-        );
+          : rosterOrder === "eje"
+          ? "EJ&E"
+          : rosterOrder.toUpperCase();
+
+        return getRosterMembers(data as Member[], rosterTypeForCalculation);
       }
 
       return (data || []) as Member[];
@@ -304,6 +305,10 @@ export default function AdminDashboard() {
               Clear
             </Button>
           )}
+          <p>
+            Table headers can be used to sort members, but only in Default (Name Order) view as the Roster have their
+            own sorting logic. However, You *can* filter rosters by Zone or Division.
+          </p>
         </div>
 
         <Select value={rosterOrder} onValueChange={(value) => setRosterOrder(value as RosterOrder)}>
@@ -329,116 +334,14 @@ export default function AdminDashboard() {
           <table className="w-full">
             <thead className="sticky top-0 bg-background">
               <tr className="border-b">
-                <TableHead>
-                  <Button
-                    variant="ghost"
-                    onClick={() => handleSort("last_name")}
-                    className="h-8 flex items-center gap-1 hover:bg-transparent"
-                  >
-                    Name
-                    {sortConfig.key === "last_name" ? (
-                      sortConfig.direction === "asc" ? (
-                        <ArrowUp className="h-4 w-4" />
-                      ) : (
-                        <ArrowDown className="h-4 w-4" />
-                      )
-                    ) : (
-                      <ArrowUpDown className="h-4 w-4 opacity-50" />
-                    )}
-                  </Button>
-                </TableHead>
-                <TableHead>
-                  <Button
-                    variant="ghost"
-                    onClick={() => handleSort("pin_number")}
-                    className="h-8 flex items-center gap-1 hover:bg-transparent"
-                  >
-                    PIN
-                    {sortConfig.key === "pin_number" ? (
-                      sortConfig.direction === "asc" ? (
-                        <ArrowUp className="h-4 w-4" />
-                      ) : (
-                        <ArrowDown className="h-4 w-4" />
-                      )
-                    ) : (
-                      <ArrowUpDown className="h-4 w-4 opacity-50" />
-                    )}
-                  </Button>
-                </TableHead>
-                <TableHead>
-                  <Button
-                    variant="ghost"
-                    onClick={() => handleSort("system_sen_type")}
-                    className="h-8 flex items-center gap-1 hover:bg-transparent"
-                  >
-                    Prior Rights
-                    {sortConfig.key === "system_sen_type" ? (
-                      sortConfig.direction === "asc" ? (
-                        <ArrowUp className="h-4 w-4" />
-                      ) : (
-                        <ArrowDown className="h-4 w-4" />
-                      )
-                    ) : (
-                      <ArrowUpDown className="h-4 w-4 opacity-50" />
-                    )}
-                  </Button>
-                </TableHead>
-                <TableHead>
-                  <Button
-                    variant="ghost"
-                    onClick={() => handleSort("engineer_date")}
-                    className="h-8 flex items-center gap-1 hover:bg-transparent"
-                  >
-                    Engineer Date
-                    {sortConfig.key === "engineer_date" ? (
-                      sortConfig.direction === "asc" ? (
-                        <ArrowUp className="h-4 w-4" />
-                      ) : (
-                        <ArrowDown className="h-4 w-4" />
-                      )
-                    ) : (
-                      <ArrowUpDown className="h-4 w-4 opacity-50" />
-                    )}
-                  </Button>
-                </TableHead>
+                <SortableHeader column="last_name" label="Name" />
+                <SortableHeader column="pin_number" label="PIN" />
+                <SortableHeader column="system_sen_type" label="Prior Rights" />
+                <SortableHeader column="engineer_date" label="Engineer Date" />
                 <ZoneHeader />
-                <TableHead>
-                  <Button
-                    variant="ghost"
-                    onClick={() => handleSort("prior_vac_sys")}
-                    className="h-8 flex items-center gap-1 hover:bg-transparent"
-                  >
-                    Prior Rights Rank
-                    {sortConfig.key === "prior_vac_sys" ? (
-                      sortConfig.direction === "asc" ? (
-                        <ArrowUp className="h-4 w-4" />
-                      ) : (
-                        <ArrowDown className="h-4 w-4" />
-                      )
-                    ) : (
-                      <ArrowUpDown className="h-4 w-4 opacity-50" />
-                    )}
-                  </Button>
-                </TableHead>
+                <SortableHeader column="home_zone" label="Home Zone" />
                 <DivisionHeader />
-                <TableHead>
-                  <Button
-                    variant="ghost"
-                    onClick={() => handleSort("status")}
-                    className="h-8 flex items-center gap-1 hover:bg-transparent"
-                  >
-                    Status
-                    {sortConfig.key === "status" ? (
-                      sortConfig.direction === "asc" ? (
-                        <ArrowUp className="h-4 w-4" />
-                      ) : (
-                        <ArrowDown className="h-4 w-4" />
-                      )
-                    ) : (
-                      <ArrowUpDown className="h-4 w-4 opacity-50" />
-                    )}
-                  </Button>
-                </TableHead>
+                <SortableHeader column="status" label="Status" />
                 <TableHead className="h-12 px-4 text-right align-middle font-medium">Actions</TableHead>
               </tr>
             </thead>
@@ -459,7 +362,7 @@ export default function AdminDashboard() {
                       {member.engineer_date ? new Date(member.engineer_date + "T00:00:00").toLocaleDateString() : "-"}
                     </td>
                     <td className="h-12 px-4 align-middle">{member.zone || "-"}</td>
-                    <td className="h-12 px-4 align-middle">{member.prior_vac_sys || "-"}</td>
+                    <td className="h-12 px-4 align-middle">{member.home_zone || "-"}</td>
                     <td className="h-12 px-4 align-middle">{member.division || "-"}</td>
                     <td className="h-12 px-4 align-middle">
                       <span

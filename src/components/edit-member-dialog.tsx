@@ -45,9 +45,10 @@ export function EditMemberDialog({ member, open, onOpenChange }: EditMemberDialo
     first_name: member.first_name || "",
     last_name: member.last_name || "",
     pin_number: member.pin_number || "",
-    system_sen_type: member.system_sen_type || "",
+    system_sen_type: member.system_sen_type || "SYS2",
     engineer_date: member.engineer_date ? new Date(member.engineer_date).toISOString().split("T")[0] : "",
     zone: member.zone || "",
+    home_zone: member.home_zone || "",
     prior_vac_sys: member.prior_vac_sys || "",
     division: member.division || "",
     status: member.status || "ACTIVE",
@@ -56,15 +57,16 @@ export function EditMemberDialog({ member, open, onOpenChange }: EditMemberDialo
     misc_notes: member.misc_notes || "",
   });
 
-  // Update formData when member changes
+  // Reset form data when member changes
   useEffect(() => {
     setFormData({
       first_name: member.first_name || "",
       last_name: member.last_name || "",
       pin_number: member.pin_number || "",
-      system_sen_type: member.system_sen_type || "",
+      system_sen_type: member.system_sen_type || "SYS2",
       engineer_date: member.engineer_date ? new Date(member.engineer_date).toISOString().split("T")[0] : "",
       zone: member.zone || "",
+      home_zone: member.home_zone || "",
       prior_vac_sys: member.prior_vac_sys || "",
       division: member.division || "",
       status: member.status || "ACTIVE",
@@ -191,6 +193,21 @@ export function EditMemberDialog({ member, open, onOpenChange }: EditMemberDialo
             <Select value={formData.zone} onValueChange={(value) => handleChange("zone", value)}>
               <SelectTrigger>
                 <SelectValue placeholder="Select Zone" />
+              </SelectTrigger>
+              <SelectContent>
+                {ZONES.map((zone) => (
+                  <SelectItem key={zone} value={zone}>
+                    {zone.charAt(0).toUpperCase() + zone.slice(1)}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="home_zone">Home Zone</Label>
+            <Select value={formData.home_zone} onValueChange={(value) => handleChange("home_zone", value)}>
+              <SelectTrigger>
+                <SelectValue placeholder="Select Home Zone" />
               </SelectTrigger>
               <SelectContent>
                 {ZONES.map((zone) => (

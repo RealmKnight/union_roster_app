@@ -143,6 +143,7 @@ export type Database = {
           eje_sen_roster: number | null;
           engineer_date: string | null;
           first_name: string | null;
+          home_zone: Database["public"]["Enums"]["zone"] | null;
           id: string | null;
           last_name: string | null;
           misc_notes: string | null;
@@ -167,6 +168,7 @@ export type Database = {
           eje_sen_roster?: number | null;
           engineer_date?: string | null;
           first_name?: string | null;
+          home_zone?: Database["public"]["Enums"]["zone"] | null;
           id?: string | null;
           last_name?: string | null;
           misc_notes?: string | null;
@@ -191,6 +193,7 @@ export type Database = {
           eje_sen_roster?: number | null;
           engineer_date?: string | null;
           first_name?: string | null;
+          home_zone?: Database["public"]["Enums"]["zone"] | null;
           id?: string | null;
           last_name?: string | null;
           misc_notes?: string | null;
