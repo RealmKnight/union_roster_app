@@ -18,11 +18,15 @@ function DownloadButton({ members, selectedFields, selectedRoster }: DownloadBut
   const handleDownload = async () => {
     try {
       setIsGenerating(true);
-      const blob = await generatePDF({ members, selectedFields, rosterType: selectedRoster });
+      const blob = await generatePDF({
+        members,
+        selectedFields,
+        rosterType: selectedRoster,
+      });
       const url = URL.createObjectURL(blob);
       const link = document.createElement("a");
       link.href = url;
-      link.download = `${selectedRoster.toLowerCase()}-roster.pdf`;
+      link.download = `${selectedRoster.toLowerCase().replace(/ /g, "-")}.pdf`;
       link.click();
       URL.revokeObjectURL(url);
     } catch (error) {
@@ -51,6 +55,7 @@ const OPTIONAL_FIELDS = [
   { id: "engineer_date", label: "Engineer Date" },
   { id: "date_of_birth", label: "Date of Birth" },
   { id: "zone", label: "Zone" },
+  { id: "home_zone", label: "Home Zone" },
   { id: "division", label: "Division" },
   { id: "prior_vac_sys", label: "Prior Rights Rank" },
 ];

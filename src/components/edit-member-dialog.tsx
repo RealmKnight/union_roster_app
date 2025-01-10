@@ -92,6 +92,7 @@ export function EditMemberDialog({ member, open, onOpenChange }: EditMemberDialo
 
         // Handle enum fields - convert empty strings to null
         zone: formData.zone || null,
+        home_zone: formData.home_zone || null,
         division: formData.division || null,
         system_sen_type: formData.system_sen_type || null,
 

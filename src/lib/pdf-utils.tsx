@@ -52,6 +52,7 @@ export async function generatePDF({
     ...(selectedFields.includes("engineer_date") ? [{ header: "Engineer Date", key: "engineer_date" }] : []),
     ...(selectedFields.includes("date_of_birth") ? [{ header: "Date of Birth", key: "date_of_birth" }] : []),
     ...(selectedFields.includes("zone") ? [{ header: "Zone", key: "zone" }] : []),
+    ...(selectedFields.includes("home_zone") ? [{ header: "Home Zone", key: "home_zone" }] : []),
     ...(selectedFields.includes("division") ? [{ header: "Division", key: "division" }] : []),
     ...(selectedFields.includes("prior_vac_sys") ? [{ header: "Prior Rights Rank", key: "prior_vac_sys" }] : []),
   ];
@@ -79,9 +80,11 @@ export async function generatePDF({
     if (selectedFields.includes("zone")) {
       row.push(member.zone || "-");
     }
+    if (selectedFields.includes("home_zone")) {
+      row.push(member.home_zone || "-");
+    }
     if (selectedFields.includes("division")) {
-      // If division is null, show misc_notes instead
-      row.push(member.division || member.misc_notes || "-");
+      row.push(member.division || "-");
     }
     if (selectedFields.includes("prior_vac_sys")) {
       row.push(member.prior_vac_sys?.toString() || "-");
@@ -118,11 +121,16 @@ export async function generatePDF({
     content: [
       {
         columns: [
-          { width: "*", text: "" }, // Empty left column for spacing
+          {
+            width: "*",
+            text: "",
+          },
           {
             width: "auto",
-            text: rosterType.includes("Order Selection List") ? rosterType : `${rosterType} Seniority List`,
+            text: rosterType,
             style: "header",
+            alignment: "center",
+            margin: [0, 0, 0, 5],
           },
           {
             width: "*",
@@ -131,7 +139,7 @@ export async function generatePDF({
             alignment: "right",
           },
         ],
-        margin: [5, 5, 5, 10],
+        margin: [5, 5, 5, 20],
       },
       {
         table: {

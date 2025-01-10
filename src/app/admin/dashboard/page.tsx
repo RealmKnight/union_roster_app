@@ -307,7 +307,7 @@ export default function AdminDashboard() {
           )}
           <p>
             Table headers can be used to sort members, but only in Default (Name Order) view as the Roster have their
-            own sorting logic. However, You *can* filter rosters by Zone or Division.
+            own sorting logic. However, You *can* filter rosters by Zone or Division and download only that sorted list.
           </p>
         </div>
 
@@ -409,9 +409,27 @@ export default function AdminDashboard() {
         members={members || []}
         selectedRoster={
           rosterOrder === "default"
-            ? "Admin"
+            ? activeFilter === "zone" && selectedZone !== "all"
+              ? `Admin - Sorted by ${selectedZone.charAt(0).toUpperCase() + selectedZone.slice(1)}`
+              : activeFilter === "division" && selectedDivision !== "all"
+              ? `Admin - Sorted by Division ${selectedDivision}`
+              : "Admin"
             : rosterOrder.startsWith("osl-")
-            ? `${rosterOrder.replace(/^osl-/i, "").toUpperCase()} Order Selection List`
+            ? activeFilter === "zone" && selectedZone !== "all"
+              ? `${rosterOrder.replace(/^osl-/i, "").toUpperCase()} Order Selection List - Sorted by ${
+                  selectedZone.charAt(0).toUpperCase() + selectedZone.slice(1)
+                }`
+              : activeFilter === "division" && selectedDivision !== "all"
+              ? `${rosterOrder
+                  .replace(/^osl-/i, "")
+                  .toUpperCase()} Order Selection List - Sorted by Division ${selectedDivision}`
+              : `${rosterOrder.replace(/^osl-/i, "").toUpperCase()} Order Selection List`
+            : activeFilter === "zone" && selectedZone !== "all"
+            ? `${rosterOrder.toUpperCase()} Roster - Sorted by ${
+                selectedZone.charAt(0).toUpperCase() + selectedZone.slice(1)
+              }`
+            : activeFilter === "division" && selectedDivision !== "all"
+            ? `${rosterOrder.toUpperCase()} Roster - Sorted by Division ${selectedDivision}`
             : `${rosterOrder.toUpperCase()} Roster`
         }
         onDownload={setSelectedFields}
