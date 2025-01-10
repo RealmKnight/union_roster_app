@@ -121,7 +121,7 @@ export async function generatePDF({
           { width: "*", text: "" }, // Empty left column for spacing
           {
             width: "auto",
-            text: `${rosterType} Seniority Roster`,
+            text: rosterType.includes("Order Selection List") ? rosterType : `${rosterType} Seniority List`,
             style: "header",
           },
           {
@@ -131,7 +131,7 @@ export async function generatePDF({
             alignment: "right",
           },
         ],
-        margin: [0, 0, 0, 10],
+        margin: [5, 5, 5, 10],
       },
       {
         table: {

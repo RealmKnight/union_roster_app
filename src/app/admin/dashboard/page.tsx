@@ -127,7 +127,11 @@ export default function AdminDashboard() {
       if (rosterOrder !== "default" && data) {
         return getRosterMembers(
           data as Member[],
-          rosterOrder.toUpperCase() as Database["public"]["Enums"]["sys_seniority_type"]
+          rosterOrder.startsWith("osl-")
+            ? rosterOrder.toUpperCase()
+            : rosterOrder === "eje"
+            ? "EJ&E"
+            : rosterOrder.toUpperCase()
         );
       }
 

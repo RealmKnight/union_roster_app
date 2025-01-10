@@ -40,6 +40,8 @@ export const getRosterMembers = (members: Member[], type: string) => {
     case "EJ&E":
       return combineEJEArrays(wcmembers, dmirmembers, dwpmembers, sys1members, ejemembers, sys2members);
     default:
-      return combineWCArrays(wcmembers, dmirmembers, dwpmembers, sys1members, ejemembers, sys2members);
+      // Log the roster type to help with debugging
+      console.log("Unrecognized roster type:", rosterType);
+      return members; // Return unmodified list instead of defaulting to WC roster
   }
 };
