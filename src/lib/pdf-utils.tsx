@@ -49,6 +49,7 @@ export async function generatePDF({
     { header: "Rank", key: "rank" },
     { header: "Name", key: "name" },
     { header: "PIN", key: "pin_number" },
+    { header: "Prior Rights", key: "system_sen_type" },
     ...(selectedFields.includes("engineer_date") ? [{ header: "Engineer Date", key: "engineer_date" }] : []),
     ...(selectedFields.includes("date_of_birth") ? [{ header: "Date of Birth", key: "date_of_birth" }] : []),
     ...(selectedFields.includes("zone") ? [{ header: "Zone", key: "zone" }] : []),
@@ -69,6 +70,7 @@ export async function generatePDF({
       (index + 1).toString(),
       `${member.first_name || ""} ${member.last_name || ""}`.trim(),
       member.pin_number || "-",
+      member.system_sen_type || "-",
     ];
 
     if (selectedFields.includes("engineer_date")) {

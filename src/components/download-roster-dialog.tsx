@@ -75,13 +75,14 @@ export function DownloadRosterDialog({
     );
   };
 
-  const allFields = ["rank", "name", "pin_number", ...selectedFields];
+  const allFields = ["rank", "name", "pin_number", "system_sen_type", ...selectedFields];
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
-          <DialogTitle>Download {selectedRoster} Roster</DialogTitle>
+          <DialogTitle>Download Roster</DialogTitle>
+          <div className="text-sm text-muted-foreground mt-1">{selectedRoster}</div>
         </DialogHeader>
         <div className="py-4 space-y-4">
           <div className="space-y-2">
@@ -98,6 +99,10 @@ export function DownloadRosterDialog({
               <div className="flex items-center gap-2">
                 <Checkbox checked disabled />
                 <Label>PIN</Label>
+              </div>
+              <div className="flex items-center gap-2">
+                <Checkbox checked disabled />
+                <Label>Prior Rights</Label>
               </div>
             </div>
           </div>
