@@ -52,6 +52,7 @@ export default function AdminDashboard() {
   const [selectedZone, setSelectedZone] = useState<Zone | "all">("all");
   const [sortConfig, setSortConfig] = useState<SortConfig>({ key: "last_name", direction: "asc" });
   const [activeFilter, setActiveFilter] = useState<ActiveFilter>("none");
+  const [activeDropdown, setActiveDropdown] = useState<ActiveFilter>("none");
   const [selectedMember, setSelectedMember] = useState<Member | null>(null);
   const [editDialogOpen, setEditDialogOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
@@ -193,11 +194,13 @@ export default function AdminDashboard() {
       // Reset the other filter when making a selection
       if (type === "zone") {
         setSelectedDivision("all");
+        setActiveFilter("none");
       } else if (type === "division") {
         setSelectedZone("all");
+        setActiveFilter(newValue === "all" ? "none" : "division");
       }
       onChange(newValue);
-      setActiveFilter("none");
+      setActiveDropdown("none");
     };
 
     return (
@@ -205,7 +208,7 @@ export default function AdminDashboard() {
         <div className="flex items-center gap-2">
           <Button
             variant="ghost"
-            onClick={() => setActiveFilter(activeFilter === type ? "none" : type)}
+            onClick={() => setActiveDropdown(activeDropdown === type ? "none" : type)}
             className="h-8 flex items-center gap-1 hover:bg-transparent"
           >
             {value === "all" ? (
@@ -213,9 +216,9 @@ export default function AdminDashboard() {
             ) : (
               <span className="font-medium">{formatOption ? formatOption(value) : value}</span>
             )}
-            {activeFilter === type ? <ArrowUp className="h-4 w-4" /> : <ArrowUpDown className="h-4 w-4 opacity-50" />}
+            {activeDropdown === type ? <ArrowUp className="h-4 w-4" /> : <ArrowUpDown className="h-4 w-4 opacity-50" />}
           </Button>
-          {activeFilter === type && (
+          {activeDropdown === type && (
             <Select value={value} onValueChange={handleChange}>
               <SelectTrigger className="h-8 w-[120px]">
                 <SelectValue placeholder={`All ${label}s`} />
@@ -240,7 +243,16 @@ export default function AdminDashboard() {
       type="division"
       label="Division"
       value={selectedDivision}
-      onChange={(value) => setSelectedDivision(value as Division | "all")}
+      onChange={(value) => {
+        console.log("Setting division to:", value);
+        setSelectedDivision(value as Division | "all");
+        // Store the filter state for title generation
+        if (value === "all") {
+          setActiveFilter("none");
+        } else {
+          setActiveFilter("division");
+        }
+      }}
       options={DIVISIONS}
       formatOption={(div) => `Division ${div}`}
     />
@@ -283,7 +295,21 @@ export default function AdminDashboard() {
             <Plus className="h-4 w-4 mr-2" />
             Add Member
           </Button>
-          <Button variant="outline" size="icon" onClick={() => setShowDownloadDialog(true)}>
+          <Button
+            variant="outline"
+            size="icon"
+            onClick={() => {
+              console.log(
+                "Opening download dialog - activeFilter:",
+                activeFilter,
+                "selectedDivision:",
+                selectedDivision,
+                "rosterOrder:",
+                rosterOrder
+              );
+              setShowDownloadDialog(true);
+            }}
+          >
             <Download className="h-4 w-4" />
           </Button>
         </div>
@@ -407,31 +433,34 @@ export default function AdminDashboard() {
         open={showDownloadDialog}
         onOpenChange={setShowDownloadDialog}
         members={members || []}
-        selectedRoster={
-          rosterOrder === "default"
-            ? activeFilter === "zone" && selectedZone !== "all"
-              ? `Admin - Sorted by ${selectedZone.charAt(0).toUpperCase() + selectedZone.slice(1)}`
-              : activeFilter === "division" && selectedDivision !== "all"
-              ? `Admin - Sorted by Division ${selectedDivision}`
-              : "Admin"
-            : rosterOrder.startsWith("osl-")
-            ? activeFilter === "zone" && selectedZone !== "all"
-              ? `${rosterOrder.replace(/^osl-/i, "").toUpperCase()} Order Selection List - Sorted by ${
+        selectedRoster={(() => {
+          const title =
+            rosterOrder === "default"
+              ? activeFilter === "zone" && selectedZone !== "all"
+                ? `Admin - Sorted by ${selectedZone.charAt(0).toUpperCase() + selectedZone.slice(1)}`
+                : activeFilter === "division" && selectedDivision !== "all"
+                ? `Admin - Sorted by Division ${selectedDivision}`
+                : "Admin"
+              : rosterOrder.startsWith("osl-")
+              ? activeFilter === "zone" && selectedZone !== "all"
+                ? `${rosterOrder.replace(/^osl-/i, "").toUpperCase()} Order Selection List - Sorted by ${
+                    selectedZone.charAt(0).toUpperCase() + selectedZone.slice(1)
+                  }`
+                : activeFilter === "division" && selectedDivision !== "all"
+                ? `${rosterOrder
+                    .replace(/^osl-/i, "")
+                    .toUpperCase()} Order Selection List - Sorted by Division ${selectedDivision}`
+                : `${rosterOrder.replace(/^osl-/i, "").toUpperCase()} Order Selection List`
+              : activeFilter === "zone" && selectedZone !== "all"
+              ? `${rosterOrder.toUpperCase()} Roster - Sorted by ${
                   selectedZone.charAt(0).toUpperCase() + selectedZone.slice(1)
                 }`
               : activeFilter === "division" && selectedDivision !== "all"
-              ? `${rosterOrder
-                  .replace(/^osl-/i, "")
-                  .toUpperCase()} Order Selection List - Sorted by Division ${selectedDivision}`
-              : `${rosterOrder.replace(/^osl-/i, "").toUpperCase()} Order Selection List`
-            : activeFilter === "zone" && selectedZone !== "all"
-            ? `${rosterOrder.toUpperCase()} Roster - Sorted by ${
-                selectedZone.charAt(0).toUpperCase() + selectedZone.slice(1)
-              }`
-            : activeFilter === "division" && selectedDivision !== "all"
-            ? `${rosterOrder.toUpperCase()} Roster - Sorted by Division ${selectedDivision}`
-            : `${rosterOrder.toUpperCase()} Roster`
-        }
+              ? `${rosterOrder.toUpperCase()} Roster - Sorted by Division ${selectedDivision}`
+              : `${rosterOrder.toUpperCase()} Roster`;
+          console.log("Constructing title with:", { activeFilter, selectedDivision, rosterOrder, title });
+          return title;
+        })()}
         onDownload={setSelectedFields}
       />
     </div>

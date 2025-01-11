@@ -15,36 +15,35 @@ import { PDFDownloadLink } from "@react-pdf/renderer";
 import type { Member } from "@/types/member";
 import type { Database } from "@/types/databasetypes";
 
+type Division = Database["public"]["Enums"]["division"];
+const DIVISIONS: Division[] = ["163", "173", "174", "175", "184", "185", "188", "209", "520"];
+
 export default function RostersPage() {
   const [selectedRoster, setSelectedRoster] = useState<Database["public"]["Enums"]["sys_seniority_type"]>("WC");
   const [showInactive, setShowInactive] = useState(false);
   const [isAdmin, setIsAdmin] = useState(false);
   const [showDownloadDialog, setShowDownloadDialog] = useState(false);
   const [selectedFields, setSelectedFields] = useState<string[]>([]);
+  const [selectedDivision, setSelectedDivision] = useState<Division | "all">("all");
   const supabase = createClient();
-
-  // Check if user is authenticated
-  useEffect(() => {
-    const checkAuth = async () => {
-      const {
-        data: { session },
-      } = await supabase.auth.getSession();
-      setIsAdmin(!!session?.user);
-    };
-    checkAuth();
-  }, [supabase.auth]);
 
   const {
     data: members,
     isLoading,
     error,
   } = useQuery({
-    queryKey: ["members", showInactive],
+    queryKey: ["members", showInactive, selectedDivision, selectedRoster],
     queryFn: async () => {
-      const query = supabase.from("members").select("*");
+      console.log("Fetching members with division:", selectedDivision);
+      let query = supabase.from("members").select("*");
 
       if (!showInactive) {
-        query.not("status", "eq", "IN-ACTIVE");
+        query = query.not("status", "eq", "IN-ACTIVE");
+      }
+
+      // Add filter for division
+      if (selectedDivision !== "all") {
+        query = query.eq("division", selectedDivision);
       }
 
       const { data, error } = await query.order("prior_vac_sys", { ascending: true });
@@ -60,7 +59,34 @@ export default function RostersPage() {
 
   const sortedMembers = members ? getRosterMembers(members, selectedRoster) : [];
 
+  // Construct the full roster title
+  const getRosterTitle = () => {
+    console.log("Building title with selectedRoster:", selectedRoster, "and selectedDivision:", selectedDivision);
+    const baseTitle = `${selectedRoster} Roster`;
+    const fullTitle = selectedDivision !== "all" ? `${baseTitle} - Division ${selectedDivision}` : baseTitle;
+    console.log("Constructed full title:", fullTitle);
+    return fullTitle;
+  };
+
+  // Log state changes
+  useEffect(() => {
+    console.log("State changed - selectedRoster:", selectedRoster, "selectedDivision:", selectedDivision);
+  }, [selectedRoster, selectedDivision]);
+
+  // Check if user is authenticated
+  useEffect(() => {
+    const checkAuth = async () => {
+      const {
+        data: { session },
+      } = await supabase.auth.getSession();
+      setIsAdmin(!!session?.user);
+    };
+    checkAuth();
+  }, [supabase.auth]);
+
   const handleDownload = (fields: string[]) => {
+    const currentTitle = getRosterTitle();
+    console.log("Handling download with title:", currentTitle);
     setSelectedFields(fields);
   };
 
@@ -91,20 +117,54 @@ export default function RostersPage() {
           <div className="relative">
             <Select
               value={selectedRoster}
-              onValueChange={(value) => setSelectedRoster(value as Database["public"]["Enums"]["sys_seniority_type"])}
+              onValueChange={(value) => {
+                console.log("Roster selection changed to:", value);
+                setSelectedRoster(value as Database["public"]["Enums"]["sys_seniority_type"]);
+              }}
             >
               <SelectTrigger className="w-[180px]">
                 <SelectValue placeholder="Select Roster" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="WC">WC Roster</SelectItem>
-                <SelectItem value="DMIR">DMIR Roster</SelectItem>
-                <SelectItem value="DWP">DWP Roster</SelectItem>
-                <SelectItem value="EJ&E">EJ&E Roster</SelectItem>
+                <SelectItem value="WC">WC</SelectItem>
+                <SelectItem value="DMIR">DMIR</SelectItem>
+                <SelectItem value="DWP">DWP</SelectItem>
+                <SelectItem value="EJ&E">EJ&E</SelectItem>
               </SelectContent>
             </Select>
           </div>
-          <Button variant="outline" size="icon" onClick={() => setShowDownloadDialog(true)}>
+          <div className="relative">
+            <Select
+              value={selectedDivision}
+              onValueChange={(value) => {
+                console.log("Division selection changed to:", value);
+                setSelectedDivision(value as Division | "all");
+                console.log("Current roster title would be:", getRosterTitle());
+              }}
+            >
+              <SelectTrigger className="w-[180px]">
+                <SelectValue placeholder="Select Division" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">All Divisions</SelectItem>
+                {DIVISIONS.map((div) => (
+                  <SelectItem key={div} value={div}>
+                    Division {div}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+          <Button
+            variant="outline"
+            size="icon"
+            onClick={() => {
+              const title = getRosterTitle();
+              console.log("Opening download dialog with title:", title);
+              console.log("Current state - selectedRoster:", selectedRoster, "selectedDivision:", selectedDivision);
+              setShowDownloadDialog(true);
+            }}
+          >
             <Download className="h-4 w-4" />
           </Button>
         </div>
@@ -157,7 +217,7 @@ export default function RostersPage() {
         open={showDownloadDialog}
         onOpenChange={setShowDownloadDialog}
         members={sortedMembers}
-        selectedRoster={selectedRoster}
+        selectedRoster={getRosterTitle()}
         onDownload={handleDownload}
       />
     </div>

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -15,9 +15,18 @@ interface DownloadButtonProps {
 function DownloadButton({ members, selectedFields, selectedRoster }: DownloadButtonProps) {
   const [isGenerating, setIsGenerating] = useState(false);
 
+  useEffect(() => {
+    console.log("DownloadButton received props:", {
+      selectedRoster,
+      selectedFields,
+      memberCount: members.length,
+    });
+  }, [selectedRoster, selectedFields, members]);
+
   const handleDownload = async () => {
     try {
       setIsGenerating(true);
+      console.log("DownloadButton - starting PDF generation with title:", selectedRoster);
       const blob = await generatePDF({
         members,
         selectedFields,
@@ -68,6 +77,15 @@ export function DownloadRosterDialog({
   onDownload,
 }: DownloadRosterDialogProps) {
   const [selectedFields, setSelectedFields] = useState<string[]>([]);
+
+  useEffect(() => {
+    if (open) {
+      console.log("DownloadRosterDialog opened with props:", {
+        selectedRoster,
+        memberCount: members.length,
+      });
+    }
+  }, [open, selectedRoster, members]);
 
   const handleFieldToggle = (field: string) => {
     setSelectedFields((current) =>

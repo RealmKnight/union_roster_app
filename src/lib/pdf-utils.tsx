@@ -35,6 +35,8 @@ export async function generatePDF({
     throw new Error("PDF generation can only be done in the browser");
   }
 
+  console.log("PDF Utils - rosterType received:", rosterType);
+
   // Load pdfMake with proper error handling
   let pdfMake;
   try {
