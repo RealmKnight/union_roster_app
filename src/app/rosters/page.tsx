@@ -34,7 +34,6 @@ export default function RostersPage() {
   } = useQuery({
     queryKey: ["members", showInactive, selectedDivision, selectedRoster],
     queryFn: async () => {
-      console.log("Fetching members with division:", selectedDivision);
       let query = supabase.from("members").select("*");
 
       if (!showInactive) {
@@ -61,17 +60,13 @@ export default function RostersPage() {
 
   // Construct the full roster title
   const getRosterTitle = () => {
-    console.log("Building title with selectedRoster:", selectedRoster, "and selectedDivision:", selectedDivision);
     const baseTitle = `${selectedRoster} Roster`;
     const fullTitle = selectedDivision !== "all" ? `${baseTitle} - Division ${selectedDivision}` : baseTitle;
-    console.log("Constructed full title:", fullTitle);
     return fullTitle;
   };
 
   // Log state changes
-  useEffect(() => {
-    console.log("State changed - selectedRoster:", selectedRoster, "selectedDivision:", selectedDivision);
-  }, [selectedRoster, selectedDivision]);
+  useEffect(() => {}, [selectedRoster, selectedDivision]);
 
   // Check if user is authenticated
   useEffect(() => {
@@ -86,7 +81,6 @@ export default function RostersPage() {
 
   const handleDownload = (fields: string[]) => {
     const currentTitle = getRosterTitle();
-    console.log("Handling download with title:", currentTitle);
     setSelectedFields(fields);
   };
 
@@ -118,7 +112,6 @@ export default function RostersPage() {
             <Select
               value={selectedRoster}
               onValueChange={(value) => {
-                console.log("Roster selection changed to:", value);
                 setSelectedRoster(value as Database["public"]["Enums"]["sys_seniority_type"]);
               }}
             >
@@ -137,9 +130,7 @@ export default function RostersPage() {
             <Select
               value={selectedDivision}
               onValueChange={(value) => {
-                console.log("Division selection changed to:", value);
                 setSelectedDivision(value as Division | "all");
-                console.log("Current roster title would be:", getRosterTitle());
               }}
             >
               <SelectTrigger className="w-[180px]">
@@ -160,8 +151,6 @@ export default function RostersPage() {
             size="icon"
             onClick={() => {
               const title = getRosterTitle();
-              console.log("Opening download dialog with title:", title);
-              console.log("Current state - selectedRoster:", selectedRoster, "selectedDivision:", selectedDivision);
               setShowDownloadDialog(true);
             }}
           >

@@ -244,7 +244,6 @@ export default function AdminDashboard() {
       label="Division"
       value={selectedDivision}
       onChange={(value) => {
-        console.log("Setting division to:", value);
         setSelectedDivision(value as Division | "all");
         // Store the filter state for title generation
         if (value === "all") {
@@ -263,7 +262,15 @@ export default function AdminDashboard() {
       type="zone"
       label="Zone"
       value={selectedZone}
-      onChange={(value) => setSelectedZone(value as Zone | "all")}
+      onChange={(value) => {
+        setSelectedZone(value as Zone | "all");
+        // Store the filter state for title generation
+        if (value === "all") {
+          setActiveFilter("none");
+        } else {
+          setActiveFilter("zone");
+        }
+      }}
       options={ZONES}
       formatOption={(zone) => zone.charAt(0).toUpperCase() + zone.slice(1)}
     />
@@ -299,14 +306,6 @@ export default function AdminDashboard() {
             variant="outline"
             size="icon"
             onClick={() => {
-              console.log(
-                "Opening download dialog - activeFilter:",
-                activeFilter,
-                "selectedDivision:",
-                selectedDivision,
-                "rosterOrder:",
-                rosterOrder
-              );
               setShowDownloadDialog(true);
             }}
           >
@@ -458,7 +457,6 @@ export default function AdminDashboard() {
               : activeFilter === "division" && selectedDivision !== "all"
               ? `${rosterOrder.toUpperCase()} Roster - Sorted by Division ${selectedDivision}`
               : `${rosterOrder.toUpperCase()} Roster`;
-          console.log("Constructing title with:", { activeFilter, selectedDivision, rosterOrder, title });
           return title;
         })()}
         onDownload={setSelectedFields}

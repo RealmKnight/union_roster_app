@@ -15,18 +15,11 @@ interface DownloadButtonProps {
 function DownloadButton({ members, selectedFields, selectedRoster }: DownloadButtonProps) {
   const [isGenerating, setIsGenerating] = useState(false);
 
-  useEffect(() => {
-    console.log("DownloadButton received props:", {
-      selectedRoster,
-      selectedFields,
-      memberCount: members.length,
-    });
-  }, [selectedRoster, selectedFields, members]);
+  useEffect(() => {}, [selectedRoster, selectedFields, members]);
 
   const handleDownload = async () => {
     try {
       setIsGenerating(true);
-      console.log("DownloadButton - starting PDF generation with title:", selectedRoster);
       const blob = await generatePDF({
         members,
         selectedFields,
@@ -39,7 +32,6 @@ function DownloadButton({ members, selectedFields, selectedRoster }: DownloadBut
       link.click();
       URL.revokeObjectURL(url);
     } catch (error) {
-      console.error("Error generating PDF:", error);
     } finally {
       setIsGenerating(false);
     }
@@ -80,10 +72,6 @@ export function DownloadRosterDialog({
 
   useEffect(() => {
     if (open) {
-      console.log("DownloadRosterDialog opened with props:", {
-        selectedRoster,
-        memberCount: members.length,
-      });
     }
   }, [open, selectedRoster, members]);
 
