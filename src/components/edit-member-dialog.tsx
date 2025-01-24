@@ -191,11 +191,15 @@ export function EditMemberDialog({ member, open, onOpenChange }: EditMemberDialo
           </div>
           <div className="space-y-2">
             <Label htmlFor="zone">Zone</Label>
-            <Select value={formData.zone} onValueChange={(value) => handleChange("zone", value)}>
+            <Select
+              value={formData.zone}
+              onValueChange={(value) => handleChange("zone", value === "null" ? "" : value)}
+            >
               <SelectTrigger>
                 <SelectValue placeholder="Select Zone" />
               </SelectTrigger>
-              <SelectContent>
+              <SelectContent className="max-h-[200px] overflow-y-auto">
+                <SelectItem value="null">Remove zone</SelectItem>
                 {ZONES.map((zone) => (
                   <SelectItem key={zone} value={zone}>
                     {zone.charAt(0).toUpperCase() + zone.slice(1)}
@@ -206,11 +210,15 @@ export function EditMemberDialog({ member, open, onOpenChange }: EditMemberDialo
           </div>
           <div className="space-y-2">
             <Label htmlFor="home_zone">Home Zone</Label>
-            <Select value={formData.home_zone} onValueChange={(value) => handleChange("home_zone", value)}>
+            <Select
+              value={formData.home_zone}
+              onValueChange={(value) => handleChange("home_zone", value === "null" ? "" : value)}
+            >
               <SelectTrigger>
                 <SelectValue placeholder="Select Home Zone" />
               </SelectTrigger>
-              <SelectContent>
+              <SelectContent className="max-h-[200px] overflow-y-auto">
+                <SelectItem value="null">Remove zone</SelectItem>
                 {ZONES.map((zone) => (
                   <SelectItem key={zone} value={zone}>
                     {zone.charAt(0).toUpperCase() + zone.slice(1)}

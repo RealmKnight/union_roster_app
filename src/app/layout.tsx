@@ -38,10 +38,8 @@ export default function RootLayout({
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased min-h-screen flex flex-col`}>
         <QueryProvider>
           <ThemeProvider attribute="class" defaultTheme="light" enableSystem={false} disableTransitionOnChange>
-            <div className="px-4">
-              <NavBar />
-              <main className="flex-1">{children}</main>
-            </div>
+            <NavBar />
+            <main className="flex-1 container mx-auto max-w-[1400px] px-4">{children}</main>
           </ThemeProvider>
         </QueryProvider>
       </body>
