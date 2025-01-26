@@ -136,11 +136,11 @@ export function EditMemberDialog({ member, open, onOpenChange }: EditMemberDialo
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+      <DialogContent className="sm:max-w-2xl h-[calc(100vh-2rem)] flex flex-col p-6">
         <DialogHeader>
           <DialogTitle>Edit Member Details</DialogTitle>
         </DialogHeader>
-        <div className="grid grid-cols-2 gap-4 py-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 py-4 flex-1 overflow-y-auto">
           <div className="space-y-2">
             <Label htmlFor="first_name">First Name</Label>
             <Input
@@ -290,7 +290,7 @@ export function EditMemberDialog({ member, open, onOpenChange }: EditMemberDialo
             />
           </div>
         </div>
-        <DialogFooter>
+        <DialogFooter className="flex-shrink-0 pt-4">
           <Button variant="outline" onClick={() => onOpenChange(false)}>
             Cancel
           </Button>
