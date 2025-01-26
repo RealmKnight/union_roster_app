@@ -62,7 +62,7 @@ export async function NavBar() {
     <header className="border-b sticky top-0 bg-background z-50">
       <div className="container flex h-14 items-center justify-between">
         {/* Left placeholder for centering */}
-        <div className="w-[100px] hidden md:block" />
+        <div className="w-[50px] hidden md:block" />
 
         {/* Desktop Navigation */}
         <NavigationMenu className="hidden md:flex">
