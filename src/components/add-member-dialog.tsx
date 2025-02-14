@@ -128,8 +128,9 @@ export function AddMemberDialog({ open, onOpenChange }: AddMemberDialogProps) {
         prior_vac_sys: formData.prior_vac_sys ? Number(formData.prior_vac_sys) : null,
 
         // Handle enum fields - convert empty strings to null
-        zone: formData.zone || null,
-        division: formData.division || null,
+        zone: formData.zone === "" ? null : formData.zone,
+        home_zone: formData.home_zone === "" ? null : formData.home_zone,
+        division: formData.division === "" ? null : formData.division,
         system_sen_type: formData.system_sen_type || "SYS2",
 
         // Handle date fields - convert empty strings to null
